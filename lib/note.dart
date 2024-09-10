@@ -5,6 +5,15 @@ class Note {
   String content;
 
   Note({required this.title, required this.content});
+
+  Note.fromJson(Map<String, dynamic> json)
+      : title = json['title'],
+        content = json['content'];
+
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'content': content,
+  };
 }
 
 class NotePage extends StatefulWidget {
@@ -35,15 +44,30 @@ class _NotePageState extends State<NotePage> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.note != null ? 'Edit Note' : 'Add Note'),
+      appBar: AppBar(title: Text(widget.note != null ? 'Edit Note' : 'Add Note'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () {
-              _saveNote();
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'save') {
+                _saveNote();
+              } else if (value == 'delete') {
+                _deleteNote();
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem(
+                  value: 'save',
+                  child: Text('Save'),
+                ),
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Text('Delete'),
+                ),
+              ];
             },
           ),
         ],
@@ -80,6 +104,13 @@ class _NotePageState extends State<NotePage> {
           content: _contentController.text,
         ),
       );
+    }
+  }
+  void _deleteNote() {
+    if (widget.note != null) {
+      Navigator.pop(context, 'delete'); // Signal to delete the note
+    } else {
+      Navigator.pop(context); // Just go back if it's a new note
     }
   }
 }

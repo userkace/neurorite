@@ -10,7 +10,7 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login"),
+        title: const Text("Neurorite"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -37,7 +37,7 @@ class Login extends StatelessWidget {
             const SizedBox(height: 16.0),
             TextButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => const Signup(),
                 ));
               },
