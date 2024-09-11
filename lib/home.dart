@@ -27,10 +27,11 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Notes"),
+        title: const Text("Neurorite"),
         actions: [
           IconButton(
-            icon: Icon(_isGrid ? Icons.list_alt_rounded : Icons.grid_on_rounded),
+            icon:
+                Icon(_isGrid ? Icons.list_alt_rounded : Icons.grid_on_rounded),
             onPressed: _toggleViewMode,
           ),
         ],
@@ -39,65 +40,78 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(8.0),
         child: _isGrid
             ? GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 1.75,
-          ),
-          itemCount: notes.length,
-          itemBuilder: (context, index) {
-            final note = notes[index];return GestureDetector(
-              onTap: () {
-                _navigateToNote(note);
-              },
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.75,
+                ),
+                itemCount: notes.length,
+                itemBuilder: (context, index) {
+                  final note = notes[index];
+                  return GestureDetector(
+                    onTap: () {
+                      _navigateToNote(note);
+                    },
+                    onLongPress: () {
+                      _showNoteOptions(context, note);
+                    },
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              note.title,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 4.0),
+                            SizedBox(
+                              child: Text(
+                                note.content.length > 100
+                                    ? '${note.content.substring(0, 100)}...'
+                                    : note.content,
+                                style: const TextStyle(color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 3,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              )
+            : ListView.builder(
+                itemCount: notes.length,
+                itemBuilder: (context, index) {
+                  final note = notes[index];
+                  return Card(
+                    // Wrap ListTile content in a Card
+                    child: ListTile(
+                      title: Text(
                         note.title,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 4.0),
-                      SizedBox(
-                        child: Text(
-                          note.content.length > 100
-                              ? '${note.content.substring(0, 100)}...'
-                              : note.content,
-                          style: const TextStyle(color: Colors.grey),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
-                        ),
+                      subtitle: Text(
+                        note.content.length > 100
+                            ? '${note.content.substring(0, 100)}...'
+                            : note.content,
+                        style: const TextStyle(color: Colors.grey),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        )
-            : ListView.builder(
-          itemCount: notes.length,
-          itemBuilder: (context, index) {
-            final note = notes[index];
-            return Card( // Wrap ListTile content in a Card
-              child: ListTile(title: Text(note.title, style: const TextStyle(fontWeight: FontWeight.bold),),
-                subtitle: Text(
-                  note.content.length > 100
-                      ? '${note.content.substring(0, 100)}...'
-                      : note.content,
-                  style: const TextStyle(color: Colors.grey),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 3,
-                ),
-                onTap: () {
-                  _navigateToNote(note);
+                      onTap: () {
+                        _navigateToNote(note);
+                      },
+                      onLongPress: () {
+                        _showNoteOptions(context, note);
+                      },
+                    ),
+                  );
                 },
               ),
-            );
-          },
-        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -110,24 +124,62 @@ class _HomeState extends State<Home> {
   }
 
   void _navigateToNote(Note? note) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NotePage(note: note),
+    final result =await showDialog<Note>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(24.0),
+          child: ClipRRect( // Wrap NotePage with ClipRRect
+            borderRadius: BorderRadius.circular(18.0),
+            child: NotePage(note: note),
+          ),
+        );
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        if (note == null) {
+          notes.add(result);
+        } else {
+          final index = notes.indexOf(note);
+          notes[index] = result;
+        }
+      });
+      _saveNotes();
+    }
+  }
+
+  void _showNoteOptions(BuildContext context, Note note) async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      builder: (BuildContext context) => Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit'),
+              onTap: () {
+                Navigator.pop(context, 'edit');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text('Delete'),
+              onTap: () {
+                Navigator.pop(context, 'delete');
+              },
+            ),
+          ],
+        ),
       ),
     );
 
     if (result != null) {
-      if (result is Note) {
-        setState(() {
-          if (note == null) {
-            notes.add(result);
-          } else {
-            final index = notes.indexOf(note);
-            notes[index] = result;
-          }
-        });
-        _saveNotes();
+      if (result == 'edit') {
+        _navigateToNote(note);
       } else if (result == 'delete') {
         setState(() {
           notes.remove(note);
@@ -135,12 +187,15 @@ class _HomeState extends State<Home> {
         _saveNotes();
       }
     }
-  }_loadNotes() async {
+  }
+
+  _loadNotes() async {
     final prefs = await SharedPreferences.getInstance();
     final notesJson = prefs.getStringList('notes');
     if (notesJson != null) {
       setState(() {
-        notes = notesJson.map((json) => Note.fromJson(jsonDecode(json))).toList();
+        notes =
+            notesJson.map((json) => Note.fromJson(jsonDecode(json))).toList();
       });
     }
   }

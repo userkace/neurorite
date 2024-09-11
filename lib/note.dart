@@ -44,54 +44,67 @@ class _NotePageState extends State<NotePage> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.note != null ? 'Edit Note' : 'Add Note'),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'save') {
-                _saveNote();
-              } else if (value == 'delete') {
-                _deleteNote();
-              }
-            },
-            itemBuilder: (BuildContext context) {
-              return [
-                const PopupMenuItem(
-                  value: 'save',
-                  child: Text('Save'),
-                ),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: Text('Delete'),
-                ),
-              ];
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding:const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(hintText: 'Title'),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16.0),
+      child: Scaffold(
+        appBar: AppBar(
+          title: TextField( // Use TextField for the title
+            controller: _titleController,
+            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            decoration: const InputDecoration(
+              hintText: 'Enter your title',
+              hintStyle: TextStyle(color: Colors.black54),
+              border: InputBorder.none,
             ),
-            const SizedBox(height: 16.0),
-            Expanded(
-              child: TextField(
-                controller: _contentController,
-                decoration: const InputDecoration(hintText: 'Content'),
-                maxLines: null,
-                expands: true,
+          ),
+          actions: [
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'save') {
+                  _saveNote();
+                } else if (value == 'delete') {
+                  _deleteNote();
+                }
+              },
+              shape: RoundedRectangleBorder( // Add rounded corners to the popup itself
+                borderRadius: BorderRadius.circular(8.0),
               ),
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem(
+                    value: 'save',
+                    child: ListTile(
+                      leading: const Icon(Icons.edit),
+                      title: const Text('Edit'),
+                      onTap: () {
+                        Navigator.pop(context, 'edit');
+                      },
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: ListTile(
+                      leading: Icon(Icons.delete),
+                      title: Text('Delete'),
+                    ),
+                  ),
+                ];
+              },
             ),
           ],
         ),
-      ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+          child: TextField(
+            controller: _contentController,
+            maxLines: null,
+            decoration: const InputDecoration(
+              hintText: 'Enter your note',
+              border: InputBorder.none,
+            ),
+          ),
+        ),),
     );
   }
 
@@ -114,3 +127,5 @@ class _NotePageState extends State<NotePage> {
     }
   }
 }
+
+
