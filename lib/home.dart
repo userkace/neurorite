@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import 'note.dart'; 
+import 'note.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -123,14 +123,23 @@ class _HomeState extends State<Home> {
   }
 
   void _navigateToNote(Note? note) async {
-    final result =await showDialog<Note>(
+    final result = await showDialog<Note>(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
           insetPadding: const EdgeInsets.all(24.0),
-          child: ClipRRect( // Wrap NotePage with ClipRRect
+          child: ClipRRect(
             borderRadius: BorderRadius.circular(18.0),
-            child: NotePage(note: note),
+            child: NotePage(
+              note: note,
+              onDelete: (noteToDelete) {
+                // Add onDelete callback
+                setState(() {
+                  notes.remove(noteToDelete);
+                });
+                _saveNotes();
+              },
+            ),
           ),
         );
       },

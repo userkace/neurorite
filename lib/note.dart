@@ -11,15 +11,16 @@ class Note {
         content = json['content'];
 
   Map<String, dynamic> toJson() => {
-    'title': title,
-    'content': content,
-  };
+        'title': title,
+        'content': content,
+      };
 }
 
 class NotePage extends StatefulWidget {
   final Note? note;
+  final Function(Note)? onDelete; // Add onDelete callback
 
-  const NotePage({super.key, this.note});
+  const NotePage({super.key, this.note, this.onDelete});
 
   @override
   _NotePageState createState() => _NotePageState();
@@ -30,11 +31,14 @@ class _NotePageState extends State<NotePage> {
   late TextEditingController _contentController;
 
   String _initialTitle = '';
-  String _initialContent = '';@override
+  String _initialContent = '';
+
+  @override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.note?.title ?? '');
-    _contentController = TextEditingController(text: widget.note?.content ?? '');
+    _contentController =
+        TextEditingController(text: widget.note?.content ?? '');
     _initialTitle = _titleController.text;
     _initialContent = _contentController.text;
   }
@@ -54,45 +58,45 @@ class _NotePageState extends State<NotePage> {
         appBar: AppBar(
           title: TextField(
             controller: _titleController,
-            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold),
             decoration: const InputDecoration(
               hintText: 'Enter your title',
               hintStyle: TextStyle(color: Colors.black54),
               border: InputBorder.none,
             ),
           ),
-          leading: IconButton(icon: const Icon(Icons.arrow_back),
-            onPressed: () async {
-              if (_titleController.text != _initialTitle ||
-                  _contentController.text != _initialContent) {
-                final shouldSave = await showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Unsaved Changes'),
-                    content: const Text('Do you want to save this note?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(false); // Pop dialog
-                        },
-                        child: const Text('No'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text('Yes'),
-                      ),
-                    ],
-                  ),
-                );
-
-                if (shouldSave == true) {
-                  _saveNote();
+          leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () async {
+                if (_titleController.text != _initialTitle ||
+                    _contentController.text != _initialContent) {
+                  final shouldSave = await showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Unsaved Changes'),
+                      content: const Text('Do you want to save this note?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(false); // Pop dialog
+                          },
+                          child: const Text('No'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text('Yes'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (shouldSave == true) {
+                    _saveNote();
+                  }
+                } else {
+                  Navigator.of(context).pop();
                 }
-              } else {
-                Navigator.of(context).pop();
-              }
-              },
-          ),
+              }),
           actions: [
             PopupMenuButton<String>(
               onSelected: (value) {
@@ -112,15 +116,19 @@ class _NotePageState extends State<NotePage> {
                     child: ListTile(
                       leading: const Icon(Icons.save_rounded),
                       title: const Text('Save'),
-                      onTap: () {Navigator.pop(context, 'save');
+                      onTap: () {
+                        Navigator.pop(context, 'save');
                       },
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete',
                     child: ListTile(
-                      leading: Icon(Icons.delete_forever_rounded),
-                      title: Text('Delete'),
+                      leading: const Icon(Icons.delete_forever_rounded),
+                      title: const Text('Delete'),
+                      onTap: () {
+                        Navigator.pop(context, 'delete');
+                      },
                     ),
                   ),
                 ];
@@ -138,7 +146,8 @@ class _NotePageState extends State<NotePage> {
               border: InputBorder.none,
             ),
           ),
-        ),),
+        ),
+      ),
     );
   }
 
@@ -156,11 +165,10 @@ class _NotePageState extends State<NotePage> {
 
   void _deleteNote() {
     if (widget.note != null) {
-      Navigator.pop(context, 'delete'); // Signal to delete the note
+      widget.onDelete?.call(widget.note!);
+      Navigator.pop(context); // Signal to delete the note
     } else {
       Navigator.pop(context); // Just go back if it's a new note
     }
   }
 }
-
-
