@@ -75,17 +75,17 @@ class _NotePageState extends State<NotePage> {
                   PopupMenuItem(
                     value: 'save',
                     child: ListTile(
-                      leading: const Icon(Icons.edit),
-                      title: const Text('Edit'),
+                      leading: const Icon(Icons.save_rounded),
+                      title: const Text('Save'),
                       onTap: () {
-                        Navigator.pop(context, 'edit');
+                        Navigator.pop(context, 'save');
                       },
                     ),
                   ),
                   const PopupMenuItem(
                     value: 'delete',
                     child: ListTile(
-                      leading: Icon(Icons.delete),
+                      leading: Icon(Icons.delete_forever_rounded),
                       title: Text('Delete'),
                     ),
                   ),

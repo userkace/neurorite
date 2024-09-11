@@ -165,7 +165,7 @@ class _HomeState extends State<Home> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete),
+              leading: const Icon(Icons.delete_forever_rounded),
               title: const Text('Delete'),
               onTap: () {
                 Navigator.pop(context, 'delete');
