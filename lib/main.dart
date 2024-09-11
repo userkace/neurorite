@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';import 'dart:async';
+import 'package:flutter/material.dart';
+import 'dart:async';
 
 import 'login.dart'; 
 
@@ -30,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     Timer(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => Login(),
+        builder: (context) => const Login(),
       ));
     });
   }

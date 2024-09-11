@@ -29,11 +29,14 @@ class _NotePageState extends State<NotePage> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
 
-  @override
+  String _initialTitle = '';
+  String _initialContent = '';@override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.note?.title ?? '');
     _contentController = TextEditingController(text: widget.note?.content ?? '');
+    _initialTitle = _titleController.text;
+    _initialContent = _contentController.text;
   }
 
   @override
@@ -58,6 +61,37 @@ class _NotePageState extends State<NotePage> {
               border: InputBorder.none,
             ),
           ),
+          leading: IconButton(icon: const Icon(Icons.arrow_back),
+            onPressed: () async {
+              if (_titleController.text != _initialTitle ||
+                  _contentController.text != _initialContent) {
+                final shouldSave = await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Unsaved Changes'),
+                    content: const Text('Do you want to save this note?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(false); // Pop dialog
+                        },
+                        child: const Text('No'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text('Yes'),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (shouldSave == true) {
+                  _saveNote();
+                }
+              }
+                // Navigator.of(context).pop();
+              },
+          ),
           actions: [
             PopupMenuButton<String>(
               onSelected: (value) {
@@ -77,8 +111,7 @@ class _NotePageState extends State<NotePage> {
                     child: ListTile(
                       leading: const Icon(Icons.save_rounded),
                       title: const Text('Save'),
-                      onTap: () {
-                        Navigator.pop(context, 'save');
+                      onTap: () {Navigator.pop(context, 'save');
                       },
                     ),
                   ),
@@ -119,6 +152,7 @@ class _NotePageState extends State<NotePage> {
       );
     }
   }
+
   void _deleteNote() {
     if (widget.note != null) {
       Navigator.pop(context, 'delete'); // Signal to delete the note
