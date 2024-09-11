@@ -141,7 +141,7 @@ class _HomeState extends State<Home> {
         onPressed: () {
           _navigateToNote(null);
         },
-        child: const Icon(CupertinoIcons.add),
+        child: Image.asset('assets/icon/ic.png'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
