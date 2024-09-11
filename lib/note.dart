@@ -115,7 +115,7 @@ class _NotePageState extends State<NotePage> {
               itemBuilder: (BuildContext context) {
                 return [
                   PopupMenuItem(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                     value: 'save',
                     child: ListTile(
                       leading: const Icon(Icons.save_rounded),
@@ -126,7 +126,7 @@ class _NotePageState extends State<NotePage> {
                     ),
                   ),
                   PopupMenuItem(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                     value: 'delete',
                     child: ListTile(
                       leading: const Icon(Icons.delete_forever_rounded),
