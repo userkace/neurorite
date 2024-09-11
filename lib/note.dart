@@ -49,7 +49,7 @@ class _NotePageState extends State<NotePage> {
       borderRadius: BorderRadius.circular(16.0),
       child: Scaffold(
         appBar: AppBar(
-          title: TextField( // Use TextField for the title
+          title: TextField(
             controller: _titleController,
             style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             decoration: const InputDecoration(
@@ -67,7 +67,7 @@ class _NotePageState extends State<NotePage> {
                   _deleteNote();
                 }
               },
-              shape: RoundedRectangleBorder( // Add rounded corners to the popup itself
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
               itemBuilder: (BuildContext context) {

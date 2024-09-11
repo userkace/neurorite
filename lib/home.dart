@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import 'note.dart'; // Import your note page
+import 'note.dart'; 
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -88,7 +88,6 @@ class _HomeState extends State<Home> {
                 itemBuilder: (context, index) {
                   final note = notes[index];
                   return Card(
-                    // Wrap ListTile content in a Card
                     child: ListTile(
                       title: Text(
                         note.title,
