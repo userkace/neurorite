@@ -12,7 +12,7 @@ class Login extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Neurorite"),
+        title: const Text(" "),
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
@@ -31,14 +31,14 @@ class Login extends StatelessWidget {
             ),
           ),
           child: Dialog(
-            insetPadding: const EdgeInsets.symmetric(vertical: 100.0, horizontal: 40.0),
+            insetPadding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   GradientText(
-                    "Welcome Back!",
+                    "Neurorite",
 
                     style: const TextStyle(
                       fontSize: 40,
@@ -52,7 +52,7 @@ class Login extends StatelessWidget {
                       ]
                     )
                   ),
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 16.0),
                   Theme(
                     data: AppTheme.textFieldTheme,
                     child: const Column(
@@ -68,7 +68,7 @@ class Login extends StatelessWidget {
                       ]
                     ),
                   ),
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 32.0),
                   Theme(
                     data: AppTheme.enterButtonTheme,
                     child: ElevatedButton(
@@ -76,11 +76,16 @@ class Login extends StatelessWidget {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const Home(),
                         ));
-                      },
+                      },style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(55),// Set the desired height
+                      textStyle: const TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
                       child: const Text("Login"),
                     ),
                   ),
-                  const SizedBox(height: 16.0),
+                  const SizedBox(height: 0.0),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(MaterialPageRoute(

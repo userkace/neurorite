@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:math';
 
 import 'note.dart';
 
@@ -16,6 +17,27 @@ class _HomeState extends State<Home> {
   List<Note> notes = [];
   bool _isGrid = true; // Track the current view mode
 
+  final List<String> _quotes = [
+    "Words have power.",
+    "Storytelling matters.",
+    "Write your truth.",
+    "Find your voice.",
+    "Let words flow.",
+    "Paint with words.",
+    "Weave tales of wonder.",
+    "Capture the essence.",
+    "Explore the unknown.",
+    "Ignite the imagination.",
+    "Challenge the ordinary.",
+    "Dance on the page.",
+    "Embrace the chaos.",
+    "Play with language.",
+    "Find your rhythm.",
+    "Question everything.",
+    "Dare to be different.",
+    "Write what you love.",
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -25,9 +47,12 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final random = Random();
+    final quote = _quotes[random.nextInt(_quotes.length)];
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Neurorite"),
+        titleSpacing: 0.0,
+          title: Text(quote),
         actions: [
           IconButton(
             icon:
@@ -37,12 +62,12 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
         child: _isGrid
             ? GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 1.75,
+                  childAspectRatio: 1.6,
                 ),
                 itemCount: notes.length,
                 itemBuilder: (context, index) {
@@ -56,7 +81,7 @@ class _HomeState extends State<Home> {
                     },
                     child: Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(10.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -127,7 +152,7 @@ class _HomeState extends State<Home> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          insetPadding: const EdgeInsets.all(24.0),
+          insetPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(18.0),
             child: NotePage(

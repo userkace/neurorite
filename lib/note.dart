@@ -56,14 +56,17 @@ class _NotePageState extends State<NotePage> {
       borderRadius: BorderRadius.circular(16.0),
       child: Scaffold(
         appBar: AppBar(
+          titleSpacing: -5.0,
           title: TextField(
             controller: _titleController,
             style: const TextStyle(
+                fontSize: 22,
                 color: Colors.black, fontWeight: FontWeight.bold),
             decoration: const InputDecoration(
               hintText: 'Enter your title',
               hintStyle: TextStyle(color: Colors.black54),
               border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
             ),
           ),
           leading: IconButton(
@@ -78,9 +81,7 @@ class _NotePageState extends State<NotePage> {
                       content: const Text('Do you want to save this note?'),
                       actions: [
                         TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(false); // Pop dialog
-                          },
+                          onPressed: () => Navigator.of(context).pop(false), // Pop dialog
                           child: const Text('No'),
                         ),
                         TextButton(
@@ -92,6 +93,8 @@ class _NotePageState extends State<NotePage> {
                   );
                   if (shouldSave == true) {
                     _saveNote();
+                  } else {
+                    Navigator.of(context).pop();
                   }
                 } else {
                   Navigator.of(context).pop();
@@ -107,11 +110,12 @@ class _NotePageState extends State<NotePage> {
                 }
               },
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(16.0),
               ),
               itemBuilder: (BuildContext context) {
                 return [
                   PopupMenuItem(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
                     value: 'save',
                     child: ListTile(
                       leading: const Icon(Icons.save_rounded),
@@ -122,6 +126,7 @@ class _NotePageState extends State<NotePage> {
                     ),
                   ),
                   PopupMenuItem(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
                     value: 'delete',
                     child: ListTile(
                       leading: const Icon(Icons.delete_forever_rounded),
@@ -137,7 +142,7 @@ class _NotePageState extends State<NotePage> {
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
           child: TextField(
             controller: _contentController,
             maxLines: null,

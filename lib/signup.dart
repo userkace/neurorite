@@ -12,7 +12,7 @@ class Signup extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Sign Up"),
+        title: const Text(" "),
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
@@ -31,14 +31,14 @@ class Signup extends StatelessWidget {
             ),
           ),
           child: Dialog(
-            insetPadding: const EdgeInsets.symmetric(vertical: 65.0, horizontal: 40.0),
+            insetPadding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   GradientText(
-                    "Create an Account",
+                    "Create account",
 
                     style: const TextStyle(
                       fontSize: 40,
@@ -52,7 +52,7 @@ class Signup extends StatelessWidget {
                       ]
                     )
                   ),
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 16.0),
                   Theme(
                     data: AppTheme.textFieldTheme,
                     child: const Column(
@@ -73,7 +73,7 @@ class Signup extends StatelessWidget {
                       ]
                     ),
                   ),
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 32.0),
                   Theme(
                     data: AppTheme.enterButtonTheme,
                     child: ElevatedButton(
@@ -81,11 +81,16 @@ class Signup extends StatelessWidget {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const Home(),
                         ));
-                      },
+                      },style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(55), // Set the desired height
+                      textStyle: const TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
                       child: const Text("Sign up"),
                     ),
                   ),
-                  const SizedBox(height: 16.0),
+                  const SizedBox(height: 0.0),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
