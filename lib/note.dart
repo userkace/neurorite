@@ -88,8 +88,9 @@ class _NotePageState extends State<NotePage> {
                 if (shouldSave == true) {
                   _saveNote();
                 }
+              } else {
+                Navigator.of(context).pop();
               }
-                // Navigator.of(context).pop();
               },
           ),
           actions: [
