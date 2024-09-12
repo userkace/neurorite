@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,7 +17,10 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<Note> notes = [];
+  List<Note> _filteredNotes = [];
   bool _isGrid = true; // Track the current view mode
+
+  final TextEditingController _searchController = TextEditingController();
 
   final List<String> _quotes = [
     "Words have power.",
@@ -36,15 +38,26 @@ class _HomeState extends State<Home> {
     "Embrace the chaos.",
     "Play with language.",
     "Find your rhythm.",
-    "Question everything.",
     "Dare to be different.",
     "Write what you love.",
+    "Question everything.",
+    "Darkness lurks.",
+    "Secrets unravel.",
+    "Evil awakens.",
+    "Fear takes hold.",
+    "The past haunts.",
+    "Twisted minds plot.",
+    "Fate is cruel.",
+    "The end is nigh.",
   ];
 
   @override
   void initState() {
     super.initState();
-    _loadNotes();
+    _loadNotes().then((_) {
+      // Load notes first
+      _filterNotes(''); // Then filter with empty query
+    });
     _loadViewMode();
   }
 
@@ -55,106 +68,150 @@ class _HomeState extends State<Home> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        titleSpacing: 0.0,
-          title: Text(
-            quote,            
-            style: GoogleFonts.getFont('Allerta')
+        scrolledUnderElevation: 0.0,
+        backgroundColor: Colors.transparent,
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 20), // Example: add left padding
+          child: BackButton(
+            color: Colors.white70,
           ),
+        ),
+        titleSpacing: 0.0,
+        centerTitle: true,
+        title: Text(
+          quote,
+          style: TextStyle(
+            fontFamily: GoogleFonts.getFont('Allerta').fontFamily,
+            color: Colors.white70, // Change the color here
+          ),
+        ),
         actions: [
-          IconButton(
-            icon:
-                Icon(_isGrid ? Icons.list_alt_rounded : Icons.grid_on_rounded),
-            color: Theme.of(context).colorScheme.primary,
-            onPressed: _toggleViewMode,
+          Padding(
+            padding: const EdgeInsets.only(right: 20), // Example padding
+            child: IconButton(
+              icon: Icon(
+                  _isGrid ? Icons.list_alt_rounded : Icons.grid_on_rounded),
+              color: Colors.white70,
+              onPressed: _toggleViewMode,
+            ),
           ),
         ],
         elevation: 0,
-        backgroundColor: Colors.transparent,
       ),
       body: Container(
-          decoration: AppBackground.background,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-            child: _isGrid
-                ? GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1.5,
-                    ),
-                    itemCount: notes.length,
-                    itemBuilder: (context, index) {
-                      final note = notes[index];
-                      return GestureDetector(
-                        onTap: () {
-                          _navigateToNote(note);
-                        },
-                        onLongPress: () {
-                          _showNoteOptions(context, note);
-                        },
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  note.title.length > 35
-                                    ? '${note.title.substring(0, 35)}...'
-                                    : note.title,
-                                  style:
-                                      const TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 4.0),
-                                SizedBox(
-                                  child: Text(
-                                    note.content.length > 35
-                                      ? '${note.content.substring(0, 35)}...'
-                                      : note.title.length > 35
-                                        ? '${note.content.substring(0, 10)}...'
-                                        : note.content,
-                                    style: const TextStyle(color: Colors.grey),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 4,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                : ListView.builder(
-                    itemCount: notes.length,
-                    itemBuilder: (context, index) {
-                      final note = notes[index];
-                      return Card(
-                        child: ListTile(
-                          title: Text(
-                            note.title.length > 28
-                              ? '${note.title.substring(0, 28)}...'
-                              : note.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(
-                            note.content.length > 32
-                                ? '${note.content.substring(0, 32)}...'
-                                : note.content,
-                            style: const TextStyle(color: Colors.grey),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3,
-                          ),
-                          onTap: () {
-                            _navigateToNote(note);
-                          },
-                          onLongPress: () {
-                            _showNoteOptions(context, note);
-                          },
-                        ),
-                      );
-                    },
+        decoration: AppBackground.background,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 100, 24, 0),
+              child: TextField(
+                controller: _searchController,
+                style: const TextStyle(color: Colors.white70), // Text color
+                decoration: const InputDecoration(
+                  hintText: 'Search notes...',
+                  hintStyle:
+                      TextStyle(color: Colors.white38), // Hint text color
+                  prefixIcon:
+                      Icon(Icons.search, color: Colors.white70), // Icon color
+                  enabledBorder: UnderlineInputBorder(
+                    // Border color
+                    borderSide: BorderSide(color: Colors.white70),
                   ),
-          ),
+                  focusedBorder: UnderlineInputBorder(
+                    // Focused border color
+                    borderSide: BorderSide(color: Colors.white70),
+                  ),
+                ),
+                onChanged: (text) {
+                  _filterNotes(text);
+                },
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                child: _isGrid
+                    ? GridView.builder(
+                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 80),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.5,
+                        ),
+                        itemCount: _filteredNotes.length,
+                        itemBuilder: (context, index) {
+                          final note = _filteredNotes[index];
+                          return GestureDetector(
+                            onTap: () {
+                              _navigateToNote(note);
+                            },
+                            onLongPress: () {
+                              _showNoteOptions(context, note);
+                            },
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      note.title,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                    const SizedBox(height: 4.0),
+                                    SizedBox(
+                                      child: Text(
+                                        note.content,
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 80),
+                        itemCount: _filteredNotes.length, // Use filtered notes
+                        itemBuilder: (context, index) {
+                          final note = _filteredNotes[index];
+                          return Card(
+                            child: ListTile(
+                              title: Text(
+                                note.title,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              subtitle: Text(
+                                note.content,
+                                style: const TextStyle(color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                              onTap: () {
+                                _navigateToNote(note);
+                              },
+                              onLongPress: () {
+                                _showNoteOptions(context, note);
+                              },
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -164,6 +221,16 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+  }
+
+  void _filterNotes(String query) {
+    setState(() {
+      _filteredNotes = notes
+          .where((note) =>
+              note.title.toLowerCase().contains(query.toLowerCase()) ||
+              note.content.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   void _navigateToNote(Note? note) async {
@@ -178,10 +245,17 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
               child: NotePage(
                 note: note,
+                onSave: () { // Pass the callback
+                  _saveNotes();
+                  _loadNotes().then((_) {
+                    _filterNotes('');
+                    setState(() {});
+                  });
+                },
                 onDelete: (noteToDelete) {
-                  // Add onDelete callback
                   setState(() {
                     notes.remove(noteToDelete);
+                    _filterNotes('');
                   });
                   _saveNotes();
                 },
@@ -202,6 +276,10 @@ class _HomeState extends State<Home> {
         }
       });
       _saveNotes();
+      _loadNotes().then((_) {
+        _filterNotes('');
+        setState(() {});
+      });
     }
   }
 
@@ -209,7 +287,7 @@ class _HomeState extends State<Home> {
     final result = await showModalBottomSheet<String>(
       context: context,
       builder: (BuildContext context) => Container(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -238,6 +316,7 @@ class _HomeState extends State<Home> {
       } else if (result == 'delete') {
         setState(() {
           notes.remove(note);
+          _filterNotes(''); // Update filtered list
         });
         _saveNotes();
       }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'home.dart';
 import 'signup.dart';
 
@@ -28,10 +28,10 @@ class Login extends StatelessWidget {
                 children: <Widget>[
                   GradientText(
                     "Neurorite",
-
                     style: const TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'PlaywriteCU-Regular',
                     ),
                     gradient: LinearGradient(
                       stops: [0.61, 1.00],

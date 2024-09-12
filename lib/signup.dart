@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'home.dart';
 import 'login.dart';
 import 'theme/theme.dart';
@@ -27,10 +27,10 @@ class Signup extends StatelessWidget {
                 children: <Widget>[
                   GradientText(
                     "Create account",
-
-                    style: const TextStyle(
-                      fontSize: 40,
+                    style: TextStyle(
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
+                      fontFamily: GoogleFonts.getFont('Allerta').fontFamily,
                     ),
                     gradient: LinearGradient(
                       stops: [0.61, 1.00],

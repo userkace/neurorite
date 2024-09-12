@@ -18,9 +18,10 @@ class Note {
 
 class NotePage extends StatefulWidget {
   final Note? note;
-  final Function(Note)? onDelete; // Add onDelete callback
+  final Function(Note)? onDelete;
+  final VoidCallback? onSave; // Callback function
 
-  const NotePage({super.key, this.note, this.onDelete});
+  const NotePage({super.key, this.note, this.onDelete, this.onSave});
 
   @override
   _NotePageState createState() => _NotePageState();
@@ -165,6 +166,7 @@ class _NotePageState extends State<NotePage> {
           content: _contentController.text,
         ),
       );
+      widget.onSave?.call();
     }
   }
 
