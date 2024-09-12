@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'home.dart';
 import 'login.dart';
 import 'theme/theme.dart';
@@ -26,12 +25,12 @@ class Signup extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 GradientText("Create account",
-                    style: TextStyle(
-                      fontSize: 25,
+                    style: const TextStyle(
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.getFont('Outfit').fontFamily,
+                      fontFamily: 'Outfit'
                     ),
-                    gradient: LinearGradient(stops: [
+                    gradient: LinearGradient(stops: const [
                       0.61,
                       1.00
                     ], colors: [
@@ -41,12 +40,13 @@ class Signup extends StatelessWidget {
                 const SizedBox(height: 16.0),
                 Theme(
                   data: AppTheme.textFieldTheme,
-                  child: Column(children: <Widget>[
+                  child: const Column(children: <Widget>[
                     TextField(
                       decoration: InputDecoration(
                         labelText: "Email",
                         labelStyle: TextStyle(
-                          fontFamily: GoogleFonts.getFont('Outfit').fontFamily,
+                          fontFamily:
+                              'Outfit', //GoogleFonts.getFont('Satisfy').fontFamily,
                         ),
                       ),
                     ),
@@ -55,7 +55,8 @@ class Signup extends StatelessWidget {
                       decoration: InputDecoration(
                         labelText: "Password",
                         labelStyle: TextStyle(
-                          fontFamily: GoogleFonts.getFont('Outfit').fontFamily,
+                          fontFamily:
+                              'Outfit', //GoogleFonts.getFont('Satisfy').fontFamily,
                         ),
                       ),
                       obscureText: true,
@@ -65,7 +66,8 @@ class Signup extends StatelessWidget {
                       decoration: InputDecoration(
                         labelText: "Confirm Password",
                         labelStyle: TextStyle(
-                          fontFamily: GoogleFonts.getFont('Outfit').fontFamily,
+                          fontFamily:
+                              'Outfit', //GoogleFonts.getFont('Satisfy').fontFamily,
                         ),
                       ),
                       obscureText: true,
@@ -88,11 +90,14 @@ class Signup extends StatelessWidget {
                         fontSize: 18,
                       ),
                     ),
-                    child: Text("Sign up",
+                    child: const Text(
+                      "Sign up",
                       style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.getFont('Outfit').fontFamily,
-                    ),),
+                        fontWeight: FontWeight.bold,
+                        fontFamily:
+                            'Outfit', //GoogleFonts.getFont('Satisfy').fontFamily,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 0.0),
@@ -102,7 +107,8 @@ class Signup extends StatelessWidget {
                       builder: (context) => const Login(),
                     ));
                   },
-                  child: const Text("Already have an account? Login"),
+                  child: const Text("Already have an account? Login",
+                      style: TextStyle(fontFamily: 'Outfit')),
                 ),
               ],
             ),

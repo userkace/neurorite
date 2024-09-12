@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'dart:math';
 
@@ -72,9 +71,9 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         title: Text(
           quote,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 25,
-            fontFamily: GoogleFonts.getFont('Satisfy').fontFamily,
+            fontFamily: 'Satisfy', //GoogleFonts.getFont('Satisfy').fontFamily,
             color: Colors.white70, // Change the color here
           ),
         ),
@@ -100,19 +99,20 @@ class _HomeState extends State<Home> {
               child: TextField(
                 controller: _searchController,
                 style: const TextStyle(color: Colors.white70), // Text color
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search notes...',
                   hintStyle: TextStyle(
                     color: Colors.white38,
-                    fontFamily: GoogleFonts.getFont('Outfit').fontFamily,
+                    fontFamily:
+                        'Outfit', //GoogleFonts.getFont('Satisfy').fontFamily,
                   ), // Hint text color
-                  prefixIcon: const Icon(Icons.search,
-                      color: Colors.white70), // Icon color
-                  enabledBorder: const UnderlineInputBorder(
+                  prefixIcon:
+                      Icon(Icons.search, color: Colors.white70), // Icon color
+                  enabledBorder: UnderlineInputBorder(
                     // Border color
                     borderSide: BorderSide(color: Colors.white70),
                   ),
-                  focusedBorder: const UnderlineInputBorder(
+                  focusedBorder: UnderlineInputBorder(
                     // Focused border color
                     borderSide: BorderSide(color: Colors.white70),
                   ),

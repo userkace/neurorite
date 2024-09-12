@@ -63,6 +63,16 @@ flutter:
   assets:
     - assets/icon/ic.png
 
+
+  fonts:
+   - family: Satisfy
+     fonts:
+       - asset: assets/fonts/Satisfy-Regular.ttf
+   - family: Outfit
+     fonts:
+     - asset: assets/fonts/Outfit-Regular.ttf
+
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
