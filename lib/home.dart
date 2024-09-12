@@ -41,14 +41,6 @@ class _HomeState extends State<Home> {
     "Dare to be different.",
     "Write what you love.",
     "Question everything.",
-    "Darkness lurks.",
-    "Secrets unravel.",
-    "Evil awakens.",
-    "Fear takes hold.",
-    "The past haunts.",
-    "Twisted minds plot.",
-    "Fate is cruel.",
-    "The end is nigh.",
   ];
 
   @override
@@ -81,7 +73,8 @@ class _HomeState extends State<Home> {
         title: Text(
           quote,
           style: TextStyle(
-            fontFamily: GoogleFonts.getFont('Allerta').fontFamily,
+            fontSize: 25,
+            fontFamily: GoogleFonts.getFont('Satisfy').fontFamily,
             color: Colors.white70, // Change the color here
           ),
         ),
@@ -107,17 +100,19 @@ class _HomeState extends State<Home> {
               child: TextField(
                 controller: _searchController,
                 style: const TextStyle(color: Colors.white70), // Text color
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Search notes...',
-                  hintStyle:
-                      TextStyle(color: Colors.white38), // Hint text color
-                  prefixIcon:
-                      Icon(Icons.search, color: Colors.white70), // Icon color
-                  enabledBorder: UnderlineInputBorder(
+                  hintStyle: TextStyle(
+                    color: Colors.white38,
+                    fontFamily: GoogleFonts.getFont('Outfit').fontFamily,
+                  ), // Hint text color
+                  prefixIcon: const Icon(Icons.search,
+                      color: Colors.white70), // Icon color
+                  enabledBorder: const UnderlineInputBorder(
                     // Border color
                     borderSide: BorderSide(color: Colors.white70),
                   ),
-                  focusedBorder: UnderlineInputBorder(
+                  focusedBorder: const UnderlineInputBorder(
                     // Focused border color
                     borderSide: BorderSide(color: Colors.white70),
                   ),
@@ -217,7 +212,14 @@ class _HomeState extends State<Home> {
         onPressed: () {
           _navigateToNote(null);
         },
-        child: Image.asset('assets/icon/ic.png'),
+        child: ClipRRect(
+          // Optional: Add shape if needed
+          borderRadius: BorderRadius.circular(10.0),
+          child: Container(
+            decoration: AppBackground.background,
+            child: Image.asset('assets/icon/ic.png'),
+          ),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -245,7 +247,8 @@ class _HomeState extends State<Home> {
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
               child: NotePage(
                 note: note,
-                onSave: () { // Pass the callback
+                onSave: () {
+                  // Pass the callback
                   _saveNotes();
                   _loadNotes().then((_) {
                     _filterNotes('');
