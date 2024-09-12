@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'dart:math';
 
@@ -53,11 +54,15 @@ class _HomeState extends State<Home> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         titleSpacing: 0.0,
-          title: Text(quote),
+          title: Text(
+            quote,            
+            style: GoogleFonts.getFont('Allerta')
+          ),
         actions: [
           IconButton(
             icon:
                 Icon(_isGrid ? Icons.list_alt_rounded : Icons.grid_on_rounded),
+            color: Theme.of(context).colorScheme.primary,
             onPressed: _toggleViewMode,
           ),
         ],
@@ -79,7 +84,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             child: _isGrid
                 ? GridView.builder(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
