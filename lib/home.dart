@@ -79,12 +79,12 @@ class _HomeState extends State<Home> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             child: _isGrid
                 ? GridView.builder(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 1.6,
+                      childAspectRatio: 1.5,
                     ),
                     itemCount: notes.length,
                     itemBuilder: (context, index) {
@@ -103,19 +103,23 @@ class _HomeState extends State<Home> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  note.title,
+                                  note.title.length > 35
+                                    ? '${note.title.substring(0, 35)}...'
+                                    : note.title,
                                   style:
                                       const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 4.0),
                                 SizedBox(
                                   child: Text(
-                                    note.content.length > 100
-                                        ? '${note.content.substring(0, 100)}...'
+                                    note.content.length > 35
+                                      ? '${note.content.substring(0, 35)}...'
+                                      : note.title.length > 35
+                                        ? '${note.content.substring(0, 10)}...'
                                         : note.content,
                                     style: const TextStyle(color: Colors.grey),
                                     overflow: TextOverflow.ellipsis,
-                                    maxLines: 3,
+                                    maxLines: 4,
                                   ),
                                 ),
                               ],
@@ -132,12 +136,14 @@ class _HomeState extends State<Home> {
                       return Card(
                         child: ListTile(
                           title: Text(
-                            note.title,
+                            note.title.length > 28
+                              ? '${note.title.substring(0, 28)}...'
+                              : note.title,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
-                            note.content.length > 100
-                                ? '${note.content.substring(0, 100)}...'
+                            note.content.length > 32
+                                ? '${note.content.substring(0, 32)}...'
                                 : note.content,
                             style: const TextStyle(color: Colors.grey),
                             overflow: TextOverflow.ellipsis,
@@ -173,15 +179,18 @@ class _HomeState extends State<Home> {
           insetPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(18.0),
-            child: NotePage(
-              note: note,
-              onDelete: (noteToDelete) {
-                // Add onDelete callback
-                setState(() {
-                  notes.remove(noteToDelete);
-                });
-                _saveNotes();
-              },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+              child: NotePage(
+                note: note,
+                onDelete: (noteToDelete) {
+                  // Add onDelete callback
+                  setState(() {
+                    notes.remove(noteToDelete);
+                  });
+                  _saveNotes();
+                },
+              ),
             ),
           ),
         );
