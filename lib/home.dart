@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'dart:math';
 
@@ -50,92 +51,120 @@ class _HomeState extends State<Home> {
     final random = Random();
     final quote = _quotes[random.nextInt(_quotes.length)];
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         titleSpacing: 0.0,
-          title: Text(quote),
+          title: Text(
+            quote,            
+            style: GoogleFonts.getFont('Allerta')
+          ),
         actions: [
           IconButton(
             icon:
                 Icon(_isGrid ? Icons.list_alt_rounded : Icons.grid_on_rounded),
+            color: Theme.of(context).colorScheme.primary,
             onPressed: _toggleViewMode,
           ),
         ],
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
-        child: _isGrid
-            ? GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.6,
-                ),
-                itemCount: notes.length,
-                itemBuilder: (context, index) {
-                  final note = notes[index];
-                  return GestureDetector(
-                    onTap: () {
-                      _navigateToNote(note);
-                    },
-                    onLongPress: () {
-                      _showNoteOptions(context, note);
-                    },
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              note.title,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+      body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.00, 0.38, 0.80, 1.00],
+              colors: [
+                Color(0xAB00FFD1),
+                Color(0xAB440088),
+                Color(0xAB0C6582),
+                Color(0xFF2E0A51),
+              ],
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            child: _isGrid
+                ? GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.5,
+                    ),
+                    itemCount: notes.length,
+                    itemBuilder: (context, index) {
+                      final note = notes[index];
+                      return GestureDetector(
+                        onTap: () {
+                          _navigateToNote(note);
+                        },
+                        onLongPress: () {
+                          _showNoteOptions(context, note);
+                        },
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  note.title.length > 35
+                                    ? '${note.title.substring(0, 35)}...'
+                                    : note.title,
+                                  style:
+                                      const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 4.0),
+                                SizedBox(
+                                  child: Text(
+                                    note.content.length > 35
+                                      ? '${note.content.substring(0, 35)}...'
+                                      : note.title.length > 35
+                                        ? '${note.content.substring(0, 10)}...'
+                                        : note.content,
+                                    style: const TextStyle(color: Colors.grey),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 4,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4.0),
-                            SizedBox(
-                              child: Text(
-                                note.content.length > 100
-                                    ? '${note.content.substring(0, 100)}...'
-                                    : note.content,
-                                style: const TextStyle(color: Colors.grey),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 3,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                },
-              )
-            : ListView.builder(
-                itemCount: notes.length,
-                itemBuilder: (context, index) {
-                  final note = notes[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(
-                        note.title,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        note.content.length > 100
-                            ? '${note.content.substring(0, 100)}...'
-                            : note.content,
-                        style: const TextStyle(color: Colors.grey),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 3,
-                      ),
-                      onTap: () {
-                        _navigateToNote(note);
-                      },
-                      onLongPress: () {
-                        _showNoteOptions(context, note);
-                      },
-                    ),
-                  );
-                },
-              ),
+                      );
+                    },
+                  )
+                : ListView.builder(
+                    itemCount: notes.length,
+                    itemBuilder: (context, index) {
+                      final note = notes[index];
+                      return Card(
+                        child: ListTile(
+                          title: Text(
+                            note.title.length > 28
+                              ? '${note.title.substring(0, 28)}...'
+                              : note.title,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            note.content.length > 32
+                                ? '${note.content.substring(0, 32)}...'
+                                : note.content,
+                            style: const TextStyle(color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3,
+                          ),
+                          onTap: () {
+                            _navigateToNote(note);
+                          },
+                          onLongPress: () {
+                            _showNoteOptions(context, note);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+          ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -155,15 +184,18 @@ class _HomeState extends State<Home> {
           insetPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(18.0),
-            child: NotePage(
-              note: note,
-              onDelete: (noteToDelete) {
-                // Add onDelete callback
-                setState(() {
-                  notes.remove(noteToDelete);
-                });
-                _saveNotes();
-              },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+              child: NotePage(
+                note: note,
+                onDelete: (noteToDelete) {
+                  // Add onDelete callback
+                  setState(() {
+                    notes.remove(noteToDelete);
+                  });
+                  _saveNotes();
+                },
+              ),
             ),
           ),
         );
