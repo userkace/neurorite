@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'home.dart';
 import 'signup.dart';
-import 'theme/app_theme.dart';
+
+import 'theme/theme.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -17,19 +18,7 @@ class Login extends StatelessWidget {
         backgroundColor: Colors.transparent,
       ),
       body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.00, 0.38, 0.80, 1.00],
-              colors: [
-                Color(0xAB00FFD1),
-                Color(0xAB440088),
-                Color(0xAB0C6582),
-                Color(0xFF2E0A51),
-              ],
-            ),
-          ),
+          decoration: AppBackground.background,
           child: Dialog(
             insetPadding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
             child: Padding(

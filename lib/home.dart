@@ -7,6 +7,8 @@ import 'dart:math';
 
 import 'note.dart';
 
+import 'theme/theme.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -70,19 +72,7 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.transparent,
       ),
       body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.00, 0.38, 0.80, 1.00],
-              colors: [
-                Color(0xAB00FFD1),
-                Color(0xAB440088),
-                Color(0xAB0C6582),
-                Color(0xFF2E0A51),
-              ],
-            ),
-          ),
+          decoration: AppBackground.background,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             child: _isGrid
