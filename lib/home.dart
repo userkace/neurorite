@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'dart:convert';
 import 'dart:math';
 
@@ -47,7 +48,8 @@ class _HomeState extends State<Home> {
     super.initState();
     _loadNotes().then((_) {
       // Load notes first
-      _filterNotes(''); // Then filter with empty query
+      _filterNotes('');
+      _sortNotes();
     });
     _loadViewMode();
   }
@@ -143,7 +145,10 @@ class _HomeState extends State<Home> {
                             onLongPress: () {
                               _showNoteOptions(context, note);
                             },
+                            // Wrap with Stack to add the line
                             child: Card(
+                              color: const Color(
+                                  0xFF000000), // Set background color
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Column(
@@ -152,7 +157,10 @@ class _HomeState extends State<Home> {
                                     Text(
                                       note.title,
                                       style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            Color(0xFFF0F0F0), // Set text color
+                                      ),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
                                     ),
@@ -160,8 +168,10 @@ class _HomeState extends State<Home> {
                                     SizedBox(
                                       child: Text(
                                         note.content,
-                                        style:
-                                            const TextStyle(color: Colors.grey),
+                                        style: const TextStyle(
+                                          color: Color(
+                                              0xFFF0F0F0), // Set text color
+                                        ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 3,
                                       ),
@@ -178,28 +188,51 @@ class _HomeState extends State<Home> {
                         itemCount: _filteredNotes.length, // Use filtered notes
                         itemBuilder: (context, index) {
                           final note = _filteredNotes[index];
-                          return Card(
-                            child: ListTile(
-                              title: Text(
-                                note.title,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
+                          return Stack(
+                            // Wrap with Stack to add the line
+                            children: [
+                              Card(
+                                color: const Color(
+                                    0xFF000000), // Set background color
+                                child: ListTile(
+                                  title: Text(
+                                    note.title,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          Color(0xFFF0F0F0), // Set text color
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                  subtitle: Text(
+                                    note.content,
+                                    style: const TextStyle(
+                                      color:
+                                          Color(0xFFF0F0F0), // Set text color
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                  onTap: () {
+                                    _navigateToNote(note);
+                                  },
+                                  onLongPress: () {
+                                    _showNoteOptions(context, note);
+                                  },
+                                ),
                               ),
-                              subtitle: Text(
-                                note.content,
-                                style: const TextStyle(color: Colors.grey),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                              ),
-                              onTap: () {
-                                _navigateToNote(note);
-                              },
-                              onLongPress: () {
-                                _showNoteOptions(context, note);
-                              },
-                            ),
+                              if (note.isPinned) // Show line if pinned
+                                Positioned(
+                                  left: 4,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    width: 4, // Line width
+                                    color: Colors.purple, // Line color
+                                  ),
+                                ),
+                            ],
                           );
                         },
                       ),
@@ -208,20 +241,32 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _navigateToNote(null);
-        },
-        child: ClipRRect(
-          // Optional: Add shape if needed
-          borderRadius: BorderRadius.circular(10.0),
-          child: Container(
-            decoration: AppBackground.background,
-            child: Image.asset('assets/icon/ic.png'),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.purple.withOpacity(0.5), // Glow color
+              spreadRadius: 5, //Spread radius
+              blurRadius: 100, // Blur radius
+              offset: const Offset(0, 3), // Offset
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () {
+            _navigateToNote(null);
+          },
+          backgroundColor: const Color(0xFF000000),
+          shape: CustomFABShape(), // Use the custom shape
+          // child: const Icon(Icons.add, color: Colors.white),
+          child: const HugeIcon(
+            icon: HugeIcons.strokeRoundedAdd01,
+            color: Colors.purple,
+            size: 30.0,
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -241,6 +286,7 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         return Dialog(
           insetPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          backgroundColor: Color(0xFF0f0f0f),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(18.0),
             child: Padding(
@@ -290,25 +336,51 @@ class _HomeState extends State<Home> {
     final result = await showModalBottomSheet<String>(
       context: context,
       builder: (BuildContext context) => Container(
+        color: const Color(0xFF0f0f0f), // Set background color
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Edit'),
-              onTap: () {
-                Navigator.pop(context, 'edit');
-              },
+        child: Theme(
+          // Wrap with Theme widget
+          data: ThemeData(
+            brightness: Brightness.dark, // Set brightness to dark
+            textTheme: const TextTheme(
+              bodyMedium: TextStyle(color: Colors.white), // Set text color
             ),
-            ListTile(
-              leading: const Icon(Icons.delete_forever_rounded),
-              title: const Text('Delete'),
-              onTap: () {
-                Navigator.pop(context, 'delete');
-              },
-            ),
-          ],
+            iconTheme:
+                const IconThemeData(color: Colors.white), //Set icon color
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(note.isPinned
+                    ? Icons.push_pin_rounded
+                    : Icons.push_pin_outlined),
+                title: (note.isPinned ? Text('Unpin') : Text('Pin')),
+                onTap: () {
+                  setState(() {
+                    note.isPinned = !note.isPinned;
+                    _sortNotes(); // Sort notes after pinning/unpinning
+                  });
+                  Navigator.pop(context); // Close the bottom sheet
+                  _saveNotes(); // Save the changes
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit'),
+                onTap: () {
+                  Navigator.pop(context, 'edit');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete_forever_rounded),
+                title: const Text('Delete'),
+                onTap: () {
+                  Navigator.pop(context, 'delete');
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -350,6 +422,17 @@ class _HomeState extends State<Home> {
     _saveViewMode();
   }
 
+  void _sortNotes() {
+    setState(() {
+      _filteredNotes.sort((a, b) {
+        // Sort pinned notes to the top
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return 0; // Maintain original order for non-pinned notes
+      });
+    });
+  }
+
   _loadViewMode() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -360,5 +443,44 @@ class _HomeState extends State<Home> {
   _saveViewMode() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('isGrid', _isGrid);
+  }
+}
+
+class CustomFABShape extends ShapeBorder {
+  final double borderRadius;
+
+  CustomFABShape({this.borderRadius = 10.0});
+  @override
+  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
+    return Path(); // Not used for FAB
+  }
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
+    final double radius = borderRadius;
+    final double width = rect.width;
+    final double height = rect.height;
+
+    return Path()
+      ..moveTo(0, height) // Start at bottom left
+      ..lineTo(0, radius) // Lineto top left curve start
+      ..arcToPoint(Offset(radius, 0),
+          radius: Radius.circular(radius)) // Top left curve
+      ..lineTo(width - radius, 0) // Line to top right curve start
+      ..arcToPoint(Offset(width, radius),
+          radius: Radius.circular(radius)) // Top right curve
+      ..lineTo(width, height) // Line to bottom right
+      ..close(); // Close the path
+  }
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {}
+
+  @override
+  ShapeBorder scale(double t) {
+    return CustomFABShape(borderRadius: borderRadius * t);
   }
 }

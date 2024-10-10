@@ -6,9 +6,8 @@ class AppBackground {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: [
-        Color(0xFFEB3678),
-        Color(0xFF4F1787),
-        Color(0xFF180161),
+        Color(0xFF0f0f0f),
+        Color(0xFF0f0f0f),
       ],
     ),
   );
