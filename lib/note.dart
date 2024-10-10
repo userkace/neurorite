@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Note {
   String title;
   String content;
-  bool isPinned; // Add this property
+  bool isPinned;
 
   Note({required this.title, required this.content, this.isPinned = false});
 
@@ -27,10 +27,10 @@ class NotePage extends StatefulWidget {
   const NotePage({super.key, this.note, this.onDelete, this.onSave});
 
   @override
-  _NotePageState createState() => _NotePageState();
+  NotePageState createState() => NotePageState();
 }
 
-class _NotePageState extends State<NotePage> {
+class NotePageState extends State<NotePage> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
 
@@ -103,28 +103,11 @@ class _NotePageState extends State<NotePage> {
                       _contentController.text != _initialContent) {
                     final shouldSave = await showDialog(
                       context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Unsaved Changes'),
-                          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),// Set title color directly
-                          content: const Text('Do you want to save this note?'),
-                          contentTextStyle: const TextStyle(color: Colors.white),
-                        backgroundColor: Color(0xFF0f0f0f),
-                        actions: [
-                          TextButton(
-                            onPressed: () =>
-                                Navigator.of(context).pop(false), // Pop dialog
-                            child: const Text('No'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(true),
-                            child: const Text('Yes'),
-                          ),
-                        ],
-                      ),
+                        builder: (context) => const UnsavedChangesDialog(),
                     );
                     if (shouldSave == true) {
                       _saveNote();
-                    } else {
+                    } else if (mounted){
                       Navigator.of(context).pop();
                     }
                   } else {
@@ -200,8 +183,8 @@ class _NotePageState extends State<NotePage> {
       Navigator.pop(
         context,
         Note(
-          title: _titleController.text,
-          content: _contentController.text,
+          title: _titleController.text,content: _contentController.text,
+          isPinned: widget.note?.isPinned ?? false, // Preserve isPinned
         ),
       );
       widget.onSave?.call();
@@ -215,5 +198,29 @@ class _NotePageState extends State<NotePage> {
     } else {
       Navigator.pop(context); // Just go back if it's a new note
     }
+  }
+}
+
+class UnsavedChangesDialog extends StatelessWidget {
+  const UnsavedChangesDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Unsaved Changes'),
+      titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),content: const Text('Do you want to save this note?'),
+      contentTextStyle: const TextStyle(color: Colors.white),
+      backgroundColor: const Color(0xFF0f0f0f),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('No'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('Yes'),
+        ),
+      ],
+    );
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'dart:convert';
-import 'dart:math';
 
 import 'note.dart';
 
@@ -12,36 +11,15 @@ class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
-  _HomeState createState() => _HomeState();
+  HomeState createState() => HomeState();
 }
 
-class _HomeState extends State<Home> {
+class HomeState extends State<Home> {
   List<Note> notes = [];
   List<Note> _filteredNotes = [];
   bool _isGrid = true; // Track the current view mode
 
   final TextEditingController _searchController = TextEditingController();
-
-  final List<String> _quotes = [
-    "Words have power.",
-    "Storytelling matters.",
-    "Write your truth.",
-    "Find your voice.",
-    "Let words flow.",
-    "Paint with words.",
-    "Weave tales of wonder.",
-    "Capture the essence.",
-    "Explore the unknown.",
-    "Ignite the imagination.",
-    "Challenge the ordinary.",
-    "Dance on the page.",
-    "Embrace the chaos.",
-    "Play with language.",
-    "Find your rhythm.",
-    "Dare to be different.",
-    "Write what you love.",
-    "Question everything.",
-  ];
 
   @override
   void initState() {
@@ -49,81 +27,84 @@ class _HomeState extends State<Home> {
     _loadNotes().then((_) {
       // Load notes first
       _filterNotes('');
-      _sortNotes();
     });
     _loadViewMode();
   }
 
   @override
   Widget build(BuildContext context) {
-    final random = Random();
-    final quote = _quotes[random.nextInt(_quotes.length)];
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: false,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
-        scrolledUnderElevation: 0.0,
-        backgroundColor: Colors.transparent,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 20), // Example: add left padding
-          child: BackButton(
-            color: Colors.white70,
-          ),
-        ),
+        elevation: 0.0,
         titleSpacing: 0.0,
         centerTitle: true,
-        title: Text(
-          quote,
-          style: const TextStyle(
-            fontSize: 25,
-            fontFamily: 'Satisfy', //GoogleFonts.getFont('Satisfy').fontFamily,
-            color: Colors.white70, // Change the color here
+        backgroundColor: const Color(0xFF000000),
+        leading: InkWell(
+          onTap: () {
+            _toggleViewMode();
+          },
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          enableFeedback: false,
+          child: const HugeIcon(
+            icon: HugeIcons.strokeRoundedSetting07,
+            color: Colors.white,
+            size: 22,
+          ),
+        ),
+        title: Center(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius:
+                  BorderRadius.circular(8.0), // Adjust radius as needed
+              border: Border.all(
+                color: Colors.white70, // Outline color
+                width: 1.0, // Outline width
+              ),
+            ),
+            child: TextField(
+              controller: _searchController,
+              style: const TextStyle(color: Colors.white70),
+              decoration: const InputDecoration(
+                hintText: 'Explore your mind...',
+                hintStyle: TextStyle(
+                  color: Colors.white38,
+                  fontFamily: 'Outfit',
+                ),
+                border: InputBorder.none, // Remove underline border
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16.0), // Add padding
+              ),
+              onChanged: (text) {
+                _filterNotes(text);
+              },
+            ),
           ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 20), // Example padding
-            child: IconButton(
-              icon: Icon(
-                  _isGrid ? Icons.list_alt_rounded : Icons.grid_on_rounded),
-              color: Colors.white70,
-              onPressed: _toggleViewMode,
-            ),
-          ),
+              padding:
+                  const EdgeInsets.only(right: 20, left: 16), // Example padding
+              child: InkWell(
+                onTap: () {
+                  _toggleViewMode();
+                },
+                child: HugeIcon(
+                  icon: _isGrid
+                      ? HugeIcons.strokeRoundedListView
+                      : HugeIcons.strokeRoundedGridView,
+                  color: Colors.white,
+                  size: 22.0,
+                ),
+              )),
         ],
-        elevation: 0,
       ),
       body: Container(
         decoration: AppBackground.background,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 100, 24, 0),
-              child: TextField(
-                controller: _searchController,
-                style: const TextStyle(color: Colors.white70), // Text color
-                decoration: const InputDecoration(
-                  hintText: 'Search notes...',
-                  hintStyle: TextStyle(
-                    color: Colors.white38,
-                    fontFamily:
-                        'Outfit', //GoogleFonts.getFont('Satisfy').fontFamily,
-                  ), // Hint text color
-                  prefixIcon:
-                      Icon(Icons.search, color: Colors.white70), // Icon color
-                  enabledBorder: UnderlineInputBorder(
-                    // Border color
-                    borderSide: BorderSide(color: Colors.white70),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    // Focused border color
-                    borderSide: BorderSide(color: Colors.white70),
-                  ),
-                ),
-                onChanged: (text) {
-                  _filterNotes(text);
-                },
-              ),
-            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
@@ -133,7 +114,7 @@ class _HomeState extends State<Home> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 1.5,
+                          childAspectRatio: 1,
                         ),
                         itemCount: _filteredNotes.length,
                         itemBuilder: (context, index) {
@@ -145,21 +126,38 @@ class _HomeState extends State<Home> {
                             onLongPress: () {
                               _showNoteOptions(context, note);
                             },
-                            // Wrap with Stack to add the line
                             child: Card(
                               color: const Color(
-                                  0xFF000000), // Set background color
+                                  0xFF0a0a0a), // Set background color
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      note.title,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color:
-                                            Color(0xFFF0F0F0), // Set text color
+                                    RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          if (note
+                                              .isPinned) // Check if note is pinned
+                                            const TextSpan(
+                                              text: '● ',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.purple,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Outfit',
+                                              ),
+                                            ),
+                                          TextSpan(
+                                            text: note.title,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Outfit',
+                                              color: Color(0xFFF0F0F0),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
@@ -170,10 +168,10 @@ class _HomeState extends State<Home> {
                                         note.content,
                                         style: const TextStyle(
                                           color: Color(
-                                              0xFFF0F0F0), // Set text color
+                                              0xff5a5a5a), // Set text color
                                         ),
                                         overflow: TextOverflow.ellipsis,
-                                        maxLines: 3,
+                                        maxLines: 6,
                                       ),
                                     ),
                                   ],
@@ -193,12 +191,14 @@ class _HomeState extends State<Home> {
                             children: [
                               Card(
                                 color: const Color(
-                                    0xFF000000), // Set background color
+                                    0xFF0a0a0a), // Set background color
                                 child: ListTile(
                                   title: Text(
                                     note.title,
                                     style: const TextStyle(
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
+                                      fontFamily: 'Outfit',
                                       color:
                                           Color(0xFFF0F0F0), // Set text color
                                     ),
@@ -208,8 +208,9 @@ class _HomeState extends State<Home> {
                                   subtitle: Text(
                                     note.content,
                                     style: const TextStyle(
+                                      fontFamily: 'Outfit',
                                       color:
-                                          Color(0xFFF0F0F0), // Set text color
+                                          Color(0xff5a5a5a), // Set text color
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
@@ -224,12 +225,22 @@ class _HomeState extends State<Home> {
                               ),
                               if (note.isPinned) // Show line if pinned
                                 Positioned(
-                                  left: 4,
+                                  left: 6,
                                   top: 0,
                                   bottom: 0,
-                                  child: Container(
-                                    width: 4, // Line width
-                                    color: Colors.purple, // Line color
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 6.0, bottom: 6.0),
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          const BorderRadius.horizontal(
+                                        left: Radius.circular(8.0),
+                                      ),
+                                      child: Container(
+                                        width: 4, // Line width
+                                        color: Colors.purple, // Line color
+                                      ),
+                                    ),
                                   ),
                                 ),
                             ],
@@ -245,6 +256,12 @@ class _HomeState extends State<Home> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
+              color: Colors.black.withOpacity(1), // Glow color
+              spreadRadius: 200, //Spread radius
+              blurRadius: 250, // Blur radius
+              offset: const Offset(0, 150), // Offset
+            ),
+            BoxShadow(
               color: Colors.purple.withOpacity(0.5), // Glow color
               spreadRadius: 5, //Spread radius
               blurRadius: 100, // Blur radius
@@ -252,17 +269,52 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        child: FloatingActionButton(
-          onPressed: () {
-            _navigateToNote(null);
-          },
-          backgroundColor: const Color(0xFF000000),
-          shape: CustomFABShape(), // Use the custom shape
-          // child: const Icon(Icons.add, color: Colors.white),
-          child: const HugeIcon(
-            icon: HugeIcons.strokeRoundedAdd01,
-            color: Colors.purple,
-            size: 30.0,
+        child: InkWell(
+          onTap: null,
+          child: GestureDetector(
+            onTap: null,
+            // Used this weird ass logic to get pass the shadow being clickable...
+            behavior: HitTestBehavior.translucent,
+            child: Material(
+              color: const Color(0xFF000000),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16.0),
+                topRight: Radius.circular(16.0),
+              ),
+              clipBehavior: Clip.antiAlias, // Clip content to rounded corners
+              child: GestureDetector(
+                onTap: () {
+                  _navigateToNote(null);
+                },
+                // splashColor: Colors.transparent,
+                // highlightColor: Colors.transparent,
+                child: const SizedBox(
+                  width: 69.0,
+                  height: 80.0,
+                  child: Column(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center, // Center content vertically
+                    children: [
+                      HugeIcon(
+                        icon: HugeIcons.strokeRoundedAddCircle,
+                        color: Colors.purple,
+                        size: 35.0,
+                      ),
+                      SizedBox(
+                          height: 3.0), // Add spacing between icon and text
+                      Text(
+                        'New',
+                        style: TextStyle(
+                          fontSize: 12.0, // Adjust font size as needed
+                          color: Colors.purple, // Adjust text color as needed
+                          fontFamily: 'Outfit',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -276,7 +328,13 @@ class _HomeState extends State<Home> {
           .where((note) =>
               note.title.toLowerCase().contains(query.toLowerCase()) ||
               note.content.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+          .toList()
+        ..sort((a, b) {
+          // Apply sorting after filtering
+          if (a.isPinned && !b.isPinned) return -1;
+          if (!a.isPinned && b.isPinned) return 1;
+          return 0;
+        });
     });
   }
 
@@ -286,7 +344,7 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         return Dialog(
           insetPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          backgroundColor: Color(0xFF0f0f0f),
+          backgroundColor: const Color(0xFF0f0f0f),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(18.0),
             child: Padding(
@@ -355,11 +413,12 @@ class _HomeState extends State<Home> {
                 leading: Icon(note.isPinned
                     ? Icons.push_pin_rounded
                     : Icons.push_pin_outlined),
-                title: (note.isPinned ? Text('Unpin') : Text('Pin')),
+                title:
+                    (note.isPinned ? const Text('Unpin') : const Text('Pin')),
                 onTap: () {
                   setState(() {
                     note.isPinned = !note.isPinned;
-                    _sortNotes(); // Sort notes after pinning/unpinning
+                    _filterNotes('');
                   });
                   Navigator.pop(context); // Close the bottom sheet
                   _saveNotes(); // Save the changes
@@ -422,17 +481,6 @@ class _HomeState extends State<Home> {
     _saveViewMode();
   }
 
-  void _sortNotes() {
-    setState(() {
-      _filteredNotes.sort((a, b) {
-        // Sort pinned notes to the top
-        if (a.isPinned && !b.isPinned) return -1;
-        if (!a.isPinned && b.isPinned) return 1;
-        return 0; // Maintain original order for non-pinned notes
-      });
-    });
-  }
-
   _loadViewMode() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -443,44 +491,5 @@ class _HomeState extends State<Home> {
   _saveViewMode() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('isGrid', _isGrid);
-  }
-}
-
-class CustomFABShape extends ShapeBorder {
-  final double borderRadius;
-
-  CustomFABShape({this.borderRadius = 10.0});
-  @override
-  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
-
-  @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
-    return Path(); // Not used for FAB
-  }
-
-  @override
-  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
-    final double radius = borderRadius;
-    final double width = rect.width;
-    final double height = rect.height;
-
-    return Path()
-      ..moveTo(0, height) // Start at bottom left
-      ..lineTo(0, radius) // Lineto top left curve start
-      ..arcToPoint(Offset(radius, 0),
-          radius: Radius.circular(radius)) // Top left curve
-      ..lineTo(width - radius, 0) // Line to top right curve start
-      ..arcToPoint(Offset(width, radius),
-          radius: Radius.circular(radius)) // Top right curve
-      ..lineTo(width, height) // Line to bottom right
-      ..close(); // Close the path
-  }
-
-  @override
-  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {}
-
-  @override
-  ShapeBorder scale(double t) {
-    return CustomFABShape(borderRadius: borderRadius * t);
   }
 }
