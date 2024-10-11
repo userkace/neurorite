@@ -7,6 +7,7 @@ class AppTheme {
   static const Color secondary = Color(0xFF464EFF);
   static const Color tertiary = Color(0xFF2029FF);
   static const Color error = Color(0xFFFF474D);
+  static const Color background = Color(0xFF1E1E1E);
 
   // general app scheme
   static final ThemeData lightTheme = ThemeData(
@@ -67,7 +68,7 @@ class AppTheme {
       return tertiary;
     }),
     foregroundColor: const WidgetStatePropertyAll<Color>(Color(0xFFFFFFFF)),
-    fixedSize: const WidgetStatePropertyAll<Size>(Size(100.0, 20.0)),
+    fixedSize: const WidgetStatePropertyAll<Size>(Size(100.0, 40.0)),
     shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     ),

@@ -1,41 +1,15 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class AppBackground {
-  static const Decoration mainBackground = BoxDecoration(
-    gradient: LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        Color(0xFF1E1E1E),
-        Color(0xFF1E1E1E),
-      ],
-    ),
-  );
-
-  static Widget coloredCircleBg = Positioned(
-      top: -163,
-      left: -100,
-      child: Container(
-        height: 775,
-        width: 762,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFFE99C9C), Color(0xFFA872FF)]),
-        ),
-      ));
-}
-
-class BackgroundTest extends StatelessWidget {
+// draw the custom background
+class AppBackground extends StatelessWidget {
   final bool colored;
 
-  const BackgroundTest({this.colored = true});
+  const AppBackground({this.colored = true});
 
   @override
   Widget build(BuildContext context) {
+    // automatically set ellipse size and position based on baseline sizes
     final mainEllipseWidth = MediaQuery.of(context).size.width * (562 / 412);
     final mainEllipseHeight = MediaQuery.of(context).size.height * (575 / 917);
     final mainEllipseTopOffset =
@@ -77,6 +51,7 @@ class BackgroundTest extends StatelessWidget {
   }
 }
 
+// custom dialog box background
 class DialogBackground extends StatelessWidget {
   final Widget? child;
 

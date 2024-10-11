@@ -16,10 +16,10 @@ class Login extends StatelessWidget {
         backgroundColor: Colors.transparent,
       ),
       body: Container(
-        decoration: AppBackground.mainBackground,
+        decoration: const BoxDecoration(color: AppTheme.background),
         child: Stack(
           children: [
-            const BackgroundTest(colored: true),
+            const AppBackground(colored: true),
             Center(
                 child: DialogBackground(
               child: Padding(

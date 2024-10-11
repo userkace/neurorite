@@ -102,7 +102,7 @@ class HomeState extends State<Home> {
         ],
       ),
       body: Container(
-        decoration: AppBackground.mainBackground,
+        decoration: const BoxDecoration(color: AppTheme.background),
         child: Column(
           children: [
             Expanded(
