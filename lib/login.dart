@@ -17,42 +17,37 @@ class Login extends StatelessWidget {
       ),
       body: Container(
         decoration: AppBackground.mainBackground,
-        // decoration: const BoxDecoration(
-        //     image: DecorationImage(
-        //         image: AssetImage('assets/background/background.png'),
-        //         fit: BoxFit.cover)),
         child: Stack(
           children: [
             const BackgroundTest(colored: true),
-            DialogBackground(
-              //   insetPadding:
-              //       const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+            Center(
+                child: DialogBackground(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    GradientText("Neurorite",
+                    GradientText("Welcome Back",
                         style: const TextStyle(
-                          fontSize: 70,
+                          fontSize: 30,
                           fontWeight: FontWeight.bold,
                           fontFamily:
-                              'Satisfy', //GoogleFonts.getFont('Satisfy').fontFamily,
+                              'Outfit', //GoogleFonts.getFont('Satisfy').fontFamily,
                         ),
-                        gradient: LinearGradient(stops: const [
-                          0.61,
-                          1.00
-                        ], colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.secondary,
-                        ])),
-                    const SizedBox(height: 16.0),
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary,
+                            ])),
+                    const SizedBox(height: 32.0),
                     Theme(
                       data: AppTheme.textFieldTheme,
                       child: const Column(children: <Widget>[
                         TextField(
                           decoration: InputDecoration(
-                            labelText: "Email",
+                            labelText: "Email/Username",
                             labelStyle: TextStyle(
                               fontFamily:
                                   'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
@@ -72,7 +67,7 @@ class Login extends StatelessWidget {
                         ),
                       ]),
                     ),
-                    const SizedBox(height: 32.0),
+                    const SizedBox(height: 30.0),
                     Theme(
                       data: AppTheme.enterButtonTheme,
                       child: ElevatedButton(
@@ -98,22 +93,28 @@ class Login extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 0.0),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const Signup(),
-                        ));
-                      },
-                      child: const Text(
-                        "Don't have an account? Sign up",
-                        style: TextStyle(
-                          fontFamily:
-                              'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
-                        ),
-                      ),
-                    ),
                   ],
+                ),
+              ),
+            )),
+            Positioned(
+              bottom: 30,
+              left: 0,
+              right: 0,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const Signup(),
+                  ));
+                },
+                child: const Center(
+                  child: Text(
+                    "Don't have an account? Sign up",
+                    style: TextStyle(
+                      fontFamily:
+                          'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
+                    ),
+                  ),
                 ),
               ),
             )
