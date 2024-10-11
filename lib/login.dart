@@ -16,8 +16,15 @@ class Login extends StatelessWidget {
         backgroundColor: Colors.transparent,
       ),
       body: Container(
-        decoration: AppBackground.background,
-        child: Dialog(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('background/background.png'),
+            fit: BoxFit.cover
+          )
+        ),
+        child: Stack(
+          children: [
+            Dialog(
           insetPadding:
               const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
           child: Padding(
@@ -109,7 +116,8 @@ class Login extends StatelessWidget {
               ],
             ),
           ),
-        ),
+        )],
+      ),
       ),
     );
   }
