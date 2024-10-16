@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'dart:convert';
@@ -113,11 +114,26 @@ class HomeState extends State<Home> {
                   stream: firestoreService.getNotesStream(),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
+                      Fluttertoast.showToast(
+                        msg: "Error: ${snapshot.error}",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        backgroundColor: Colors.black54,
+                        textColor: Colors.redAccent,
+                        fontSize: 16.0,
+                      );
+                      return const SizedBox.shrink();
                     }
-
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      Fluttertoast.showToast(
+                        msg: "Loading...",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        backgroundColor: Colors.black54,
+                        textColor: Colors.purple,
+                        fontSize: 16.0,
+                      );
+                      return const SizedBox.shrink();
                     }
 
                     List<QueryDocumentSnapshot> documents = snapshot.data!.docs;
@@ -144,6 +160,12 @@ class HomeState extends State<Home> {
                                   _searchController.text.toLowerCase()))
                           .toList();
                     }
+
+                    filteredNotes.sort((a, b) {
+                      if (a.isPinned && !b.isPinned) return -1;
+                      if (!a.isPinned && b.isPinned) return 1;
+                      return 0;
+                    });
 
                     return _isGrid
                         ? GridView.builder(
