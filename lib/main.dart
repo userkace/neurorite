@@ -1,9 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'screens/login.dart';
-import 'theme/app_theme.dart';
+import 'package:neurorite/auth/login.dart';
+import 'package:neurorite/firebase_options.dart';
+import 'package:neurorite/screens/home.dart';
+import 'package:neurorite/theme/app_theme.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -15,8 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       themeMode: ThemeMode.light,
       theme: AppTheme.lightTheme,
-
-      home: const MyHomePage(),
+      home: const Home(),
     );
   }
 }

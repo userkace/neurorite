@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
-import 'signup.dart';
-
-import '../theme/theme.dart';
+import 'package:neurorite/screens/home.dart';
+import 'package:neurorite/auth/signup.dart';
+import 'package:neurorite/theme/theme.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});

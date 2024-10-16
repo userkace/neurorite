@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:neurorite/services/firestore.dart';
+
+final FirestoreService firestoreService = FirestoreService();
 
 class Note {
+  String id;
   String title;
   String content;
   bool isPinned;
 
-  Note({required this.title, required this.content, this.isPinned = false});
+  Note({required this.id, required this.title, required this.content, this.isPinned = false});
 
   Note.fromJson(Map<String, dynamic> json)
-      : title = json['title'],
+      : id = json['id'],
+        title = json['title'],
         content = json['content'],
         isPinned = json['isPinned'];
 
   Map<String, dynamic> toJson() => {
+    'id': id,
     'title': title,
     'content': content,
     'isPinned': isPinned,
@@ -178,23 +184,42 @@ class NotePageState extends State<NotePage> {
     );
   }
 
-  void _saveNote() {
+  void _saveNote() async {
     if (_titleController.text.isNotEmpty) {
-      Navigator.pop(
-        context,
-        Note(
-          title: _titleController.text,content: _contentController.text,
-          isPinned: widget.note?.isPinned ?? false, // Preserve isPinned
-        ),
-      );
-      widget.onSave?.call();
+      try {
+        if (widget.note?.id != null) {
+          await firestoreService.updateNote(
+            widget.note!.id,
+            _titleController.text,
+            _contentController.text,
+            widget.note?.isPinned ?? false,
+          );
+        } else {
+          await firestoreService.addNote(
+            _titleController.text,
+            _contentController.text,
+            widget.note?.isPinned ?? false,
+          );
+        }
+        Navigator.pop(context);
+        widget.onSave?.call();
+      } catch (e) {
+        print('Error saving note: $e');
+        // Handle the error, e.g., show a snackbar or dialog
+      }
     }
   }
 
-  void _deleteNote() {
+  void _deleteNote() async {
     if (widget.note != null) {
-      widget.onDelete?.call(widget.note!);
-      Navigator.pop(context); // Signal to delete the note
+      try {
+        await firestoreService.deleteNote(widget.note!.id); // Delete from Firestore
+        widget.onDelete?.call(widget.note!); // Notify parent widget
+        Navigator.pop(context); // Go back
+      } catch (e) {
+        print('Error deleting note: $e');
+        // Handle the error, e.g., show a snackbar or dialog
+      }
     } else {
       Navigator.pop(context); // Just go back if it's a new note
     }

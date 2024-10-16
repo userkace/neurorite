@@ -1,11 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'dart:convert';
 
-import 'note.dart';
+import 'package:neurorite/screens/note.dart';
 
-import '../theme/theme.dart';
+import 'package:neurorite/theme/theme.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -108,150 +109,190 @@ class HomeState extends State<Home> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-                child: _isGrid
-                    ? GridView.builder(
-                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 80),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 1,
-                        ),
-                        itemCount: _filteredNotes.length,
-                        itemBuilder: (context, index) {
-                          final note = _filteredNotes[index];
-                          return GestureDetector(
-                            onTap: () {
-                              _navigateToNote(note);
-                            },
-                            onLongPress: () {
-                              _showNoteOptions(context, note);
-                            },
-                            child: Card(
-                              color: const Color(
-                                  0xFF0a0a0a), // Set background color
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          if (note
-                                              .isPinned) // Check if note is pinned
-                                            const TextSpan(
-                                              text: '● ',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.purple,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Outfit',
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: firestoreService.getNotesStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+
+                    List<QueryDocumentSnapshot> documents = snapshot.data!.docs;
+
+                    // Filter notes if needed
+                    List<Note> filteredNotes = documents.map((doc) {
+                      Map<String, dynamic> data =
+                          doc.data() as Map<String, dynamic>;
+                      return Note(
+                        id: doc.id,
+                        title: data['title'],
+                        content: data['content'],
+                        isPinned: data['isPinned'],
+                      );
+                    }).toList();
+
+                    // Apply your existing filtering logic if any
+                    if (_searchController.text.isNotEmpty) {
+                      filteredNotes = filteredNotes
+                          .where((note) =>
+                              note.title.toLowerCase().contains(
+                                  _searchController.text.toLowerCase()) ||
+                              note.content.toLowerCase().contains(
+                                  _searchController.text.toLowerCase()))
+                          .toList();
+                    }
+
+                    return _isGrid
+                        ? GridView.builder(
+                            padding: const EdgeInsets.fromLTRB(0, 8, 0, 80),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 1,
+                            ),
+                            itemCount: filteredNotes.length,
+                            itemBuilder: (context, index) {
+                              final note = filteredNotes[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  _navigateToNote(note);
+                                },
+                                onLongPress: () {
+                                  _showNoteOptions(context, note);
+                                },
+                                child: Card(
+                                  color: const Color(
+                                      0xFF0a0a0a), // Set background color
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              if (note
+                                                  .isPinned) // Check if note is pinned
+                                                const TextSpan(
+                                                  text: '● ',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.purple,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: 'Outfit',
+                                                  ),
+                                                ),
+                                              TextSpan(
+                                                text: note.title,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Outfit',
+                                                  color: Color(0xFFF0F0F0),
+                                                ),
                                               ),
-                                            ),
-                                          TextSpan(
-                                            text: note.title,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Outfit',
-                                              color: Color(0xFFF0F0F0),
-                                            ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                        const SizedBox(height: 4.0),
+                                        SizedBox(
+                                          child: Text(
+                                            note.content,
+                                            style: const TextStyle(
+                                              color: Color(
+                                                  0xff5a5a5a), // Set text color
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 6,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 4.0),
-                                    SizedBox(
-                                      child: Text(
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(0, 8, 0, 80),
+                            itemCount: filteredNotes.length,
+                            itemBuilder: (context, index) {
+                              final note = filteredNotes[index];
+                              return Stack(
+                                // Wrap with Stack to add the line
+                                children: [
+                                  Card(
+                                    color: const Color(
+                                        0xFF0a0a0a), // Set background color
+                                    child: ListTile(
+                                      title: Text(
+                                        note.title,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Outfit',
+                                          color: Color(
+                                              0xFFF0F0F0), // Set text color
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                      subtitle: Text(
                                         note.content,
                                         style: const TextStyle(
+                                          fontFamily: 'Outfit',
                                           color: Color(
                                               0xff5a5a5a), // Set text color
                                         ),
                                         overflow: TextOverflow.ellipsis,
-                                        maxLines: 6,
+                                        maxLines: 2,
+                                      ),
+                                      onTap: () {
+                                        _navigateToNote(note);
+                                      },
+                                      onLongPress: () {
+                                        _showNoteOptions(context, note);
+                                      },
+                                    ),
+                                  ),
+                                  if (note.isPinned) // Show line if pinned
+                                    Positioned(
+                                      left: 6,
+                                      top: 0,
+                                      bottom: 0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 6.0, bottom: 6.0),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              const BorderRadius.horizontal(
+                                            left: Radius.circular(8.0),
+                                          ),
+                                          child: Container(
+                                            width: 4, // Line width
+                                            color: Colors.purple, // Line color
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                                ],
+                              );
+                            },
                           );
-                        },
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 80),
-                        itemCount: _filteredNotes.length, // Use filtered notes
-                        itemBuilder: (context, index) {
-                          final note = _filteredNotes[index];
-                          return Stack(
-                            // Wrap with Stack to add the line
-                            children: [
-                              Card(
-                                color: const Color(
-                                    0xFF0a0a0a), // Set background color
-                                child: ListTile(
-                                  title: Text(
-                                    note.title,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Outfit',
-                                      color:
-                                          Color(0xFFF0F0F0), // Set text color
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                  subtitle: Text(
-                                    note.content,
-                                    style: const TextStyle(
-                                      fontFamily: 'Outfit',
-                                      color:
-                                          Color(0xff5a5a5a), // Set text color
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                  ),
-                                  onTap: () {
-                                    _navigateToNote(note);
-                                  },
-                                  onLongPress: () {
-                                    _showNoteOptions(context, note);
-                                  },
-                                ),
-                              ),
-                              if (note.isPinned) // Show line if pinned
-                                Positioned(
-                                  left: 6,
-                                  top: 0,
-                                  bottom: 0,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 6.0, bottom: 6.0),
-                                    child: ClipRRect(
-                                      borderRadius:
-                                          const BorderRadius.horizontal(
-                                        left: Radius.circular(8.0),
-                                      ),
-                                      child: Container(
-                                        width: 4, // Line width
-                                        color: Colors.purple, // Line color
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
-                      ),
+                  },
+                ),
               ),
             ),
           ],
         ),
       ),
+
       floatingActionButton: Container(
         decoration: BoxDecoration(
           boxShadow: [
@@ -460,12 +501,29 @@ class HomeState extends State<Home> {
   _loadNotes() async {
     final prefs = await SharedPreferences.getInstance();
     final notesJson = prefs.getStringList('notes');
+    List<Note> loadedNotes = []; // Temporary list
+
     if (notesJson != null) {
-      setState(() {
-        notes =
-            notesJson.map((json) => Note.fromJson(jsonDecode(json))).toList();
-      });
+      loadedNotes = notesJson.map((json) => Note.fromJson(jsonDecode(json))).toList();
     }
+
+    // Fetch latest notes from Firestore
+    final snapshot = await firestoreService.getNotesStream().first; // Get first snapshot
+    final firestoreNotes = snapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return Note(
+        id: doc.id,
+        title: data['title'],
+        content: data['content'],
+        isPinned: data['isPinned'],
+      );
+    }).toList();
+
+    // Combine loaded notes and Firestore notes
+    setState(() {
+      notes = [...loadedNotes, ...firestoreNotes]; // Combine lists
+      _filterNotes(''); // Update filtered list
+    });
   }
 
   _saveNotes() async {
