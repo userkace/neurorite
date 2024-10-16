@@ -3,11 +3,43 @@ import 'package:neurorite/screens/home.dart';
 import 'package:neurorite/auth/signup.dart';
 import 'package:neurorite/theme/theme.dart';
 
-class Login extends StatelessWidget {
-  Login({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _eFocusNode = FocusNode();
+  final FocusNode _pFocusNode = FocusNode();// FocusNode for text fields
+  bool _isTextFieldFocused = false; // State variable for focus
+
+  @override
+  void initState() {
+    super.initState();
+    _eFocusNode.addListener(_onFocusChange);
+    _pFocusNode.addListener(_onFocusChange);// Attach listener
+  }
+
+  @override
+  void dispose() {
+    _eFocusNode.dispose();
+    _pFocusNode.dispose();// Dispose FocusNode
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      if (_eFocusNode.hasFocus || _pFocusNode.hasFocus){
+        _isTextFieldFocused = true;
+      } else {
+        _isTextFieldFocused = false;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +56,7 @@ class Login extends StatelessWidget {
             const AppBackground(colored: true),
             Center(
                 child: DialogBackground(
+              isTextFieldFocused: _isTextFieldFocused,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -51,6 +84,7 @@ class Login extends StatelessWidget {
                       child: Column(children: <Widget>[
                         TextField(
                           controller: _emailController,
+                          focusNode: _eFocusNode,
                           decoration: const InputDecoration(
                             labelText: "Email",
                             labelStyle: TextStyle(
@@ -62,6 +96,7 @@ class Login extends StatelessWidget {
                         const SizedBox(height: 16.0),
                         TextField(
                           controller: _passwordController,
+                          focusNode: _pFocusNode,
                           decoration: const InputDecoration(
                             labelText: "Password",
                             labelStyle: TextStyle(

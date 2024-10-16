@@ -3,13 +3,52 @@ import 'package:neurorite/screens/home.dart';
 import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
 
-class Signup extends StatelessWidget {
-  Signup({super.key});
+class Signup extends StatefulWidget {
+  const Signup({super.key});
 
+  @override
+  State<Signup> createState() => _SignupState();
+}
+
+class _SignupState extends State<Signup>{
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
+
+  final FocusNode _uFocusNode = FocusNode();
+  final FocusNode _eFocusNode = FocusNode();
+  final FocusNode _pFocusNode = FocusNode();
+  final FocusNode _cFocusNode = FocusNode();// FocusNode for text fields
+  bool _isTextFieldFocused = false; // State variable for focus
+
+  @override
+  void initState() {
+    super.initState();
+    _eFocusNode.addListener(_onFocusChange);
+    _pFocusNode.addListener(_onFocusChange);
+    _uFocusNode.addListener(_onFocusChange);
+    _cFocusNode.addListener(_onFocusChange);// Attach listener
+  }
+
+  @override
+  void dispose() {
+    _eFocusNode.dispose();
+    _pFocusNode.dispose();
+    _uFocusNode.dispose();
+    _cFocusNode.dispose();// Dispose FocusNode
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      if ((_eFocusNode.hasFocus || _pFocusNode.hasFocus) || (_cFocusNode.hasFocus || _uFocusNode.hasFocus)){
+        _isTextFieldFocused = true;
+      } else {
+        _isTextFieldFocused = false;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +65,7 @@ class Signup extends StatelessWidget {
             const AppBackground(colored: true),
             Center(
               child: DialogBackground(
+                isTextFieldFocused: _isTextFieldFocused,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
@@ -49,27 +89,30 @@ class Signup extends StatelessWidget {
                       const SizedBox(height: 16.0),
                       Theme(
                         data: AppTheme.textFieldTheme,
-                        child: const Column(children: <Widget>[
+                        child: Column(children: <Widget>[
                           TextField(
-                            decoration: InputDecoration(
+                            focusNode: _uFocusNode,
+                            decoration: const InputDecoration(
                               labelText: "Username",
                               labelStyle: TextStyle(
                                 fontFamily: 'Outfit',
                               ),
                             ),
                           ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           TextField(
-                            decoration: InputDecoration(
+                            focusNode: _eFocusNode,
+                            decoration: const InputDecoration(
                               labelText: "Email",
                               labelStyle: TextStyle(
                                 fontFamily: 'Outfit',
                               ),
                             ),
                           ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           TextField(
-                            decoration: InputDecoration(
+                            focusNode: _pFocusNode,
+                            decoration: const InputDecoration(
                               labelText: "Password",
                               labelStyle: TextStyle(
                                 fontFamily: 'Outfit',
@@ -77,9 +120,10 @@ class Signup extends StatelessWidget {
                             ),
                             obscureText: true,
                           ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           TextField(
-                            decoration: InputDecoration(
+                            focusNode: _cFocusNode,
+                            decoration: const InputDecoration(
                               labelText: "Confirm Password",
                               labelStyle: TextStyle(
                                 fontFamily: 'Outfit',
