@@ -30,7 +30,7 @@ class NotePage extends StatefulWidget {
   final Function(Note)? onDelete;
   final VoidCallback? onSave; // Callback function
 
-  const NotePage({super.key, this.note, this.onDelete, this.onSave});
+  const NotePage({super.key, this.note, this.onDelete, this.onSave,});
 
   @override
   NotePageState createState() => NotePageState();
@@ -121,6 +121,15 @@ class NotePageState extends State<NotePage> {
                   }
                 }),
             actions: [
+              IconButton(
+                icon: Icon(widget.note!.isPinned ? Icons.push_pin : Icons.push_pin_outlined),
+                onPressed: () async {
+                  setState(() {
+                    widget.note!.isPinned = !widget.note!.isPinned;
+                  });
+                  await firestoreService.updateNote(widget.note!.id, _titleController.text, _contentController.text, widget.note!.isPinned);
+                },
+              ),
               PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'save') {
