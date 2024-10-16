@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
   class FirestoreService {
 
@@ -31,4 +32,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
       return notes.doc(docID).delete();
     }
 
-  }
+    final CollectionReference users =
+    FirebaseFirestore.instance.collection('users');
+
+    Future<void> addUser(String? email, String? password,){
+        return users.add({
+          'email': email,
+          'password': password,
+        });
+    }
+
+
+}

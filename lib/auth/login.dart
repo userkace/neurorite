@@ -4,7 +4,10 @@ import 'package:neurorite/auth/signup.dart';
 import 'package:neurorite/theme/theme.dart';
 
 class Login extends StatelessWidget {
-  const Login({super.key});
+  Login({super.key});
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +29,13 @@ class Login extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    GradientText("Welcome Back",
+
+                    GradientText("Neurorite",
                         style: const TextStyle(
-                          fontSize: 30,
+                          fontSize: 50,
                           fontWeight: FontWeight.bold,
                           fontFamily:
-                              'Outfit', //GoogleFonts.getFont('Satisfy').fontFamily,
+                              'Satisfy', //GoogleFonts.getFont('Satisfy').fontFamily,
                         ),
                         gradient: LinearGradient(
                             begin: Alignment.topCenter,
@@ -40,22 +44,25 @@ class Login extends StatelessWidget {
                               Theme.of(context).colorScheme.primary,
                               Theme.of(context).colorScheme.secondary,
                             ])),
-                    const SizedBox(height: 32.0),
+                    const SizedBox(height: 24.0),
+
                     Theme(
                       data: AppTheme.textFieldTheme,
-                      child: const Column(children: <Widget>[
+                      child: Column(children: <Widget>[
                         TextField(
-                          decoration: InputDecoration(
-                            labelText: "Email/Username",
+                          controller: _emailController,
+                          decoration: const InputDecoration(
+                            labelText: "Email",
                             labelStyle: TextStyle(
                               fontFamily:
                                   'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
                             ),
                           ),
                         ),
-                        SizedBox(height: 16.0),
+                        const SizedBox(height: 16.0),
                         TextField(
-                          decoration: InputDecoration(
+                          controller: _passwordController,
+                          decoration: const InputDecoration(
                             labelText: "Password",
                             labelStyle: TextStyle(
                               fontFamily:
@@ -66,7 +73,20 @@ class Login extends StatelessWidget {
                         ),
                       ]),
                     ),
-                    const SizedBox(height: 30.0),
+
+                    const SizedBox(height: 15.0),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Forgot password?',
+                          style: TextStyle(color:Colors.white),
+                        ),
+                        SizedBox(width: 10.0),
+                      ],
+                    ),
+                    const SizedBox(height: 20.0),
+
                     Theme(
                       data: AppTheme.enterButtonTheme,
                       child: ElevatedButton(
@@ -87,7 +107,7 @@ class Login extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily:
-                                'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
+                            'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
                           ),
                         ),
                       ),
@@ -95,31 +115,44 @@ class Login extends StatelessWidget {
                   ],
                 ),
               ),
-            )),
-            Positioned(
-              bottom: 30,
-              left: 0,
-              right: 0,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => const Signup(),
-                  ));
-                },
-                child: const Center(
-                  child: Text(
-                    "Don't have an account? Sign up",
-                    style: TextStyle(
-                      fontFamily:
-                          'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
-                    ),
-                  ),
+            )
+            ),
+
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    bottom: 5.0), // Slight padding from bottom
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => Signup(),
+                    ));
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Don't have an account? ",
+                        style: TextStyle(fontFamily: 'Outfit', color: AppTheme.secondary),
+                      ),
+                      Text(
+                        "Sign up",
+                        style: TextStyle(fontFamily: 'Outfit', color: Colors.white),
+                      ),
+                    ],
+                  )
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
+
+  void login(){
+
+  }
+
 }

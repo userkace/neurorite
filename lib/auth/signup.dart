@@ -4,7 +4,12 @@ import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
 
 class Signup extends StatelessWidget {
-  const Signup({super.key});
+  Signup({super.key});
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -122,13 +127,22 @@ class Signup extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const Login(),
+                      builder: (context) => Login(),
                     ));
                   },
-                  child: const Text(
-                    "Already have an account? Login",
-                    style: TextStyle(fontFamily: 'Outfit'),
-                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Already have an account? ",
+                        style: TextStyle(fontFamily: 'Outfit', color: AppTheme.secondary),
+                      ),
+                      Text(
+                        "Login",
+                        style: TextStyle(fontFamily: 'Outfit', color: Colors.white),
+                      ),
+                    ],
+                  )
                 ),
               ),
             ),

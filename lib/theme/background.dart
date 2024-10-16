@@ -66,7 +66,7 @@ class DialogBackground extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
           child: Container(
               width: MediaQuery.of(context).size.width - 50,
-              height: MediaQuery.of(context).size.height - 150,
+              height: MediaQuery.of(context).size.height - 250,
               decoration: BoxDecoration(
                 color: const Color(0x54FFFFFF),
                 borderRadius: BorderRadius.circular(20.0),

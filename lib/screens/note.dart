@@ -9,7 +9,11 @@ class Note {
   String content;
   bool isPinned;
 
-  Note({required this.id, required this.title, required this.content, this.isPinned = false});
+  Note(
+      {required this.id,
+      required this.title,
+      required this.content,
+      this.isPinned = false});
 
   Note.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -18,11 +22,11 @@ class Note {
         isPinned = json['isPinned'];
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'content': content,
-    'isPinned': isPinned,
-  };
+        'id': id,
+        'title': title,
+        'content': content,
+        'isPinned': isPinned,
+      };
 }
 
 class NotePage extends StatefulWidget {
@@ -30,7 +34,12 @@ class NotePage extends StatefulWidget {
   final Function(Note)? onDelete;
   final VoidCallback? onSave; // Callback function
 
-  const NotePage({super.key, this.note, this.onDelete, this.onSave,});
+  const NotePage({
+    super.key,
+    this.note,
+    this.onDelete,
+    this.onSave,
+  });
 
   @override
   NotePageState createState() => NotePageState();
@@ -70,17 +79,17 @@ class NotePageState extends State<NotePage> {
           popupMenuTheme: const PopupMenuThemeData(
             color: Colors.black, // Set popup menu background color
           ),
-          scaffoldBackgroundColor:
-          const Color(0xFF0f0f0f), // Set background color
+          scaffoldBackgroundColor: const Color(0xFF0f0f0f),
+          // Set background color
           appBarTheme: const AppBarTheme(
             backgroundColor: Color(0xFF0f0f0f), // Set app bar background color
             iconTheme: IconThemeData(color: Colors.white), // Set icon color
             titleTextStyle:
-            TextStyle(color: Colors.white), // Set title text color
+                TextStyle(color: Colors.white), // Set title text color
           ),
           textTheme: const TextTheme(
             bodyMedium:
-            TextStyle(color: Colors.white), // Set default text color
+                TextStyle(color: Colors.white), // Set default text color
           ),
           inputDecorationTheme: const InputDecorationTheme(
             hintStyle: TextStyle(color: Colors.white54), // Set hint text color
@@ -109,11 +118,11 @@ class NotePageState extends State<NotePage> {
                       _contentController.text != _initialContent) {
                     final shouldSave = await showDialog(
                       context: context,
-                        builder: (context) => const UnsavedChangesDialog(),
+                      builder: (context) => const UnsavedChangesDialog(),
                     );
                     if (shouldSave == true) {
                       _saveNote();
-                    } else if (mounted){
+                    } else if (mounted) {
                       Navigator.of(context).pop();
                     }
                   } else {
@@ -121,15 +130,24 @@ class NotePageState extends State<NotePage> {
                   }
                 }),
             actions: [
-              IconButton(
-                icon: Icon(widget.note!.isPinned ? Icons.push_pin : Icons.push_pin_outlined),
-                onPressed: () async {
-                  setState(() {
-                    widget.note!.isPinned = !widget.note!.isPinned;
-                  });
-                  await firestoreService.updateNote(widget.note!.id, _titleController.text, _contentController.text, widget.note!.isPinned);
-                },
-              ),
+              if (widget.note != null)
+                IconButton(
+                  icon: Icon(widget.note?.isPinned ?? false
+                      ? Icons.push_pin
+                      : Icons.push_pin_outlined),
+                  onPressed: () async {
+                    setState(() {
+                      widget.note!.isPinned = !widget.note!.isPinned;
+                    });
+
+                    await firestoreService.updateNote(
+                      widget.note!.id,
+                      _titleController.text,
+                      _contentController.text,
+                      widget.note!.isPinned,
+                    );
+                  },
+                ),
               PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'save') {
@@ -148,8 +166,11 @@ class NotePageState extends State<NotePage> {
                           horizontal: 16, vertical: 0),
                       value: 'save',
                       child: ListTile(
-                        leading: const Icon(Icons.save_rounded, color: Colors.white70), // Set icon color
-                        title: const Text('Save', style: TextStyle(color: Colors.white70)), // Set text color
+                        leading: const Icon(Icons.save_rounded,
+                            color: Colors.white70), // Set icon color
+                        title: const Text('Save',
+                            style: TextStyle(
+                                color: Colors.white70)), // Set text color
                         onTap: () {
                           Navigator.pop(context, 'save');
                         },
@@ -160,8 +181,11 @@ class NotePageState extends State<NotePage> {
                           horizontal: 16, vertical: 0),
                       value: 'delete',
                       child: ListTile(
-                        leading: const Icon(Icons.delete_forever_rounded, color: Colors.white70), // Set icon color
-                        title: const Text('Delete', style: TextStyle(color: Colors.white70)), // Set text color
+                        leading: const Icon(Icons.delete_forever_rounded,
+                            color: Colors.white70), // Set icon color
+                        title: const Text('Delete',
+                            style: TextStyle(
+                                color: Colors.white70)), // Set text color
                         onTap: () {
                           Navigator.pop(context, 'delete');
                         },
@@ -174,7 +198,7 @@ class NotePageState extends State<NotePage> {
           ),
           body: Padding(
             padding:
-            const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
             child: TextField(
               controller: _contentController,
               maxLines: null,
@@ -183,7 +207,7 @@ class NotePageState extends State<NotePage> {
               decoration: const InputDecoration(
                 hintText: 'Enter your note',
                 hintStyle:
-                TextStyle(color: Colors.white54), // Set hint text color
+                    TextStyle(color: Colors.white54), // Set hint text color
                 border: InputBorder.none,
               ),
             ),
@@ -213,8 +237,22 @@ class NotePageState extends State<NotePage> {
         Navigator.pop(context);
         widget.onSave?.call();
       } catch (e) {
-        print('Error saving note: $e');
-        // Handle the error, e.g., show a snackbar or dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+            content: Text('Error deleting note: $e'),
+            contentTextStyle: const TextStyle(color: Colors.white),
+            backgroundColor: const Color(0xFF0f0f0f),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
       }
     }
   }
@@ -222,12 +260,27 @@ class NotePageState extends State<NotePage> {
   void _deleteNote() async {
     if (widget.note != null) {
       try {
-        await firestoreService.deleteNote(widget.note!.id); // Delete from Firestore
+        await firestoreService
+            .deleteNote(widget.note!.id); // Delete from Firestore
         widget.onDelete?.call(widget.note!); // Notify parent widget
         Navigator.pop(context); // Go back
       } catch (e) {
-        print('Error deleting note: $e');
-        // Handle the error, e.g., show a snackbar or dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+            content: Text('Error deleting note: $e'),
+            contentTextStyle: const TextStyle(color: Colors.white),
+            backgroundColor: const Color(0xFF0f0f0f),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
       }
     } else {
       Navigator.pop(context); // Just go back if it's a new note
@@ -242,7 +295,8 @@ class UnsavedChangesDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Unsaved Changes'),
-      titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),content: const Text('Do you want to save this note?'),
+      titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+      content: const Text('Do you want to save this note?'),
       contentTextStyle: const TextStyle(color: Colors.white),
       backgroundColor: const Color(0xFF0f0f0f),
       actions: [
