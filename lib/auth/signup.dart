@@ -11,12 +11,10 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup>{
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
 
-  final FocusNode _uFocusNode = FocusNode();
   final FocusNode _eFocusNode = FocusNode();
   final FocusNode _pFocusNode = FocusNode();
   final FocusNode _cFocusNode = FocusNode();// FocusNode for text fields
@@ -27,7 +25,6 @@ class _SignupState extends State<Signup>{
     super.initState();
     _eFocusNode.addListener(_onFocusChange);
     _pFocusNode.addListener(_onFocusChange);
-    _uFocusNode.addListener(_onFocusChange);
     _cFocusNode.addListener(_onFocusChange);// Attach listener
   }
 
@@ -35,14 +32,13 @@ class _SignupState extends State<Signup>{
   void dispose() {
     _eFocusNode.dispose();
     _pFocusNode.dispose();
-    _uFocusNode.dispose();
     _cFocusNode.dispose();// Dispose FocusNode
     super.dispose();
   }
 
   void _onFocusChange() {
     setState(() {
-      if ((_eFocusNode.hasFocus || _pFocusNode.hasFocus) || (_cFocusNode.hasFocus || _uFocusNode.hasFocus)){
+      if ((_eFocusNode.hasFocus || _pFocusNode.hasFocus) || _cFocusNode.hasFocus){
         _isTextFieldFocused = true;
       } else {
         _isTextFieldFocused = false;
@@ -90,16 +86,6 @@ class _SignupState extends State<Signup>{
                       Theme(
                         data: AppTheme.textFieldTheme,
                         child: Column(children: <Widget>[
-                          TextField(
-                            focusNode: _uFocusNode,
-                            decoration: const InputDecoration(
-                              labelText: "Username",
-                              labelStyle: TextStyle(
-                                fontFamily: 'Outfit',
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16.0),
                           TextField(
                             focusNode: _eFocusNode,
                             decoration: const InputDecoration(
