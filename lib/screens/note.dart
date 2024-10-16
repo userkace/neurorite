@@ -248,7 +248,7 @@ class NotePageState extends State<NotePage> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Ok'),
+                child: const Text('OK'),
               ),
             ],
           ),

@@ -5,6 +5,7 @@ import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/firebase_options.dart';
 import 'package:neurorite/screens/home.dart';
 import 'package:neurorite/theme/app_theme.dart';
+import 'package:neurorite/auth/auth.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         canvasColor: AppTheme.background,
         scaffoldBackgroundColor: AppTheme.background,
       ),
-      home: Login(),
+      home: const Auth(),
     );
   }
 }

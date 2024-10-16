@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/screens/home.dart';
 import 'package:neurorite/auth/signup.dart';
@@ -16,6 +17,8 @@ class _LoginState extends State<Login> {
   final FocusNode _eFocusNode = FocusNode();
   final FocusNode _pFocusNode = FocusNode();// FocusNode for text fields
   bool _isTextFieldFocused = false; // State variable for focus
+
+
 
   @override
   void initState() {
@@ -39,6 +42,38 @@ class _LoginState extends State<Login> {
         _isTextFieldFocused = false;
       }
     });
+  }
+
+  void logIn() async{
+    showDialog(
+      context: context,
+      builder: (context) =>
+      const Center(
+          child: CircularProgressIndicator()
+      ),
+    );
+    try{
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+      if(context.mounted) Navigator.pop(context);
+    } on FirebaseAuthException catch (e){
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+          content: Text('Error with log in: $e'),
+          contentTextStyle: const TextStyle(color: Colors.white),
+          backgroundColor: const Color(0xFF0f0f0f),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -161,7 +196,7 @@ class _LoginState extends State<Login> {
                 child: TextButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => Signup(),
+                      builder: (context) => const Signup(),
                     ));
                   },
                   child: const Row(
@@ -185,9 +220,4 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-
-  void login(){
-
-  }
-
 }

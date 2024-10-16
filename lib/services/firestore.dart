@@ -31,16 +31,4 @@ import 'package:flutter/material.dart';
     Future<void> deleteNote(String docID) {
       return notes.doc(docID).delete();
     }
-
-    final CollectionReference users =
-    FirebaseFirestore.instance.collection('users');
-
-    Future<void> addUser(String? email, String? password,){
-        return users.add({
-          'email': email,
-          'password': password,
-        });
-    }
-
-
 }

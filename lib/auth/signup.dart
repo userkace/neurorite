@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:neurorite/screens/home.dart';
 import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
@@ -46,6 +48,61 @@ class _SignupState extends State<Signup>{
     });
   }
 
+  Future<UserCredential?> signUp() async{
+    showDialog(
+        context: context,
+        builder: (context) =>
+            const Center(
+                child: CircularProgressIndicator()
+            ),
+    );
+
+    if (_passwordController.text != _confirmController.text){
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+          content: const Text('Passwords are not the same.'),
+          contentTextStyle: const TextStyle(color: Colors.white),
+          backgroundColor: const Color(0xFF0f0f0f),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      try{
+        UserCredential? userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController!.text, password: _passwordController!.text);
+        Navigator.pop(context);
+      } on FirebaseAuthException catch (e){
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+            content: Text('Error creating user: $e'),
+            contentTextStyle: const TextStyle(color: Colors.white),
+            backgroundColor: const Color(0xFF0f0f0f),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    return null;
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,6 +144,7 @@ class _SignupState extends State<Signup>{
                         data: AppTheme.textFieldTheme,
                         child: Column(children: <Widget>[
                           TextField(
+                            controller: _emailController,
                             focusNode: _eFocusNode,
                             decoration: const InputDecoration(
                               labelText: "Email",
@@ -97,6 +155,7 @@ class _SignupState extends State<Signup>{
                           ),
                           const SizedBox(height: 16.0),
                           TextField(
+                            controller: _passwordController,
                             focusNode: _pFocusNode,
                             decoration: const InputDecoration(
                               labelText: "Password",
@@ -108,6 +167,7 @@ class _SignupState extends State<Signup>{
                           ),
                           const SizedBox(height: 16.0),
                           TextField(
+                            controller: _confirmController,
                             focusNode: _cFocusNode,
                             decoration: const InputDecoration(
                               labelText: "Confirm Password",
@@ -123,10 +183,27 @@ class _SignupState extends State<Signup>{
                       Theme(
                         data: AppTheme.enterButtonTheme,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const Home(),
+                          onPressed: () async {
+                            await signUp();
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => Login(),
                             ));
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Success'),
+                                titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+                                content: const Text('Account created!'),
+                                contentTextStyle: const TextStyle(color: Colors.white),
+                                backgroundColor: const Color(0xFF0f0f0f),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size.fromHeight(55),
