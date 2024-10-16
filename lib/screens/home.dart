@@ -451,18 +451,12 @@ class HomeState extends State<Home> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: Icon(note.isPinned
-                    ? Icons.push_pin_rounded
-                    : Icons.push_pin_outlined),
-                title:
-                    (note.isPinned ? const Text('Unpin') : const Text('Pin')),
-                onTap: () {
-                  setState(() {
-                    note.isPinned = !note.isPinned;
-                    _filterNotes('');
-                  });
+                leading: Icon(note.isPinned ? Icons.push_pin_rounded : Icons.push_pin_outlined),
+                title: (note.isPinned ? const Text('Unpin') : const Text('Pin')),
+                onTap: () async {
+                  // Update isPinned status in Firestore
+                  await firestoreService.updateNote(note.id, note.title, note.content, !note.isPinned);
                   Navigator.pop(context); // Close the bottom sheet
-                  _saveNotes(); // Save the changes
                 },
               ),
               ListTile(
@@ -489,11 +483,17 @@ class HomeState extends State<Home> {
       if (result == 'edit') {
         _navigateToNote(note);
       } else if (result == 'delete') {
+        // Delete note from Firestore
+        await firestoreService.deleteNote(note.id);
+        // Remove note from local list and update UI
         setState(() {
           notes.remove(note);
-          _filterNotes(''); // Update filtered list
+          _filterNotes('');
         });
-        _saveNotes();
+      } else if (result == 'pin' || result == 'unpin') {
+        // Update isPinned status in Firestore
+        await firestoreService.updateNote(note.id, note.title, note.content, !note.isPinned);
+        Navigator.pop(context); // Close the bottom sheet
       }
     }
   }
