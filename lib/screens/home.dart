@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'note.dart';
 
-import 'theme/theme.dart';
+import '../theme/theme.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

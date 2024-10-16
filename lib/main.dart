@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-import 'login.dart';
+import 'screens/login.dart';
 import 'theme/app_theme.dart';
 
 void main() {

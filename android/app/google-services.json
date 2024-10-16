@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "417227106160",
+    "project_id": "neurorite-23160",
+    "storage_bucket": "neurorite-23160.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417227106160:android:fb10f6233e1366520c51b5",
+        "android_client_info": {
+          "package_name": "dev.hau.neurorite"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQnw1F9cdC2TDlkf9eTrcmNTqMwMY7NQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

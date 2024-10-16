@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 import 'signup.dart';
 
-import 'theme/theme.dart';
+import '../theme/theme.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
