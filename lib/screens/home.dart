@@ -6,6 +6,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'dart:convert';
 
 import 'package:neurorite/screens/note.dart';
+import 'package:neurorite/screens/options.dart';
 
 import 'package:neurorite/theme/theme.dart';
 
@@ -18,7 +19,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   List<Note> notes = [];
-  List<Note> _filteredNotes = []; //for search bar
+  List<Note> _filteredNotes = []; //not called, used for search bar
   bool _isGrid = true; // Track the current view mode
 
   final TextEditingController _searchController = TextEditingController();
@@ -45,7 +46,9 @@ class HomeState extends State<Home> {
         backgroundColor: const Color(0xFF000000),
         leading: InkWell(
           onTap: () {
-            _toggleViewMode();
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const Options(),
+            ));
           },
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,

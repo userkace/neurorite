@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:neurorite/screens/home.dart';
 import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
 
@@ -53,13 +51,12 @@ class _SignupState extends State<Signup>{
         context: context,
         builder: (context) =>
             const Center(
-                child: CircularProgressIndicator()
+                child: CircularProgressIndicator(color: AppTheme.tertiary)
             ),
     );
-
     if (_passwordController.text != _confirmController.text){
       Navigator.pop(context);
-      showDialog(
+      return showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
@@ -75,13 +72,52 @@ class _SignupState extends State<Signup>{
           ],
         ),
       );
+    } else if (_passwordController.text.isEmpty) {
+      Navigator.pop(context);
+      return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+          content: const Text('Password cannot be empty.'),
+          contentTextStyle: const TextStyle(color: Colors.white),
+          backgroundColor: const Color(0xFF0f0f0f),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+  } else if (_passwordController.text.length < 6) {
+      Navigator.pop(context);
+      return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+          content: const Text('Password must be at least 6 characters long.'),
+          contentTextStyle: const TextStyle(color: Colors.white),
+          backgroundColor: const Color(0xFF0f0f0f),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     } else {
       try{
-        UserCredential? userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController!.text, password: _passwordController!.text);
+        UserCredential? userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
         Navigator.pop(context);
+        return Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const Login(),
+        ));
       } on FirebaseAuthException catch (e){
         Navigator.pop(context);
-        showDialog(
+        return showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Error'),
@@ -99,8 +135,6 @@ class _SignupState extends State<Signup>{
         );
       }
     }
-    return null;
-
   }
 
   @override
@@ -185,9 +219,6 @@ class _SignupState extends State<Signup>{
                         child: ElevatedButton(
                           onPressed: () async {
                             await signUp();
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                              builder: (context) => Login(),
-                            ));
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
@@ -234,7 +265,7 @@ class _SignupState extends State<Signup>{
                 child: TextButton(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => Login(),
+                      builder: (context) => const Login(),
                     ));
                   },
                   child: const Row(

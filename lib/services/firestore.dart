@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+
+
 
   class FirestoreService {
 
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
         'content': content,
         'isPinned': isPinned,
         'timestamp': Timestamp.now(),
+        // 'email':
       });
     }
 
@@ -25,6 +27,7 @@ import 'package:flutter/material.dart';
         'content': content,
         'isPinned': isPinned,
         'timestamp': Timestamp.now(),
+        // 'email':
       });
     }
 

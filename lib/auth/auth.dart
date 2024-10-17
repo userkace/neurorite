@@ -15,7 +15,7 @@ class Auth extends StatelessWidget {
           builder: (context, snapshot){
             if(snapshot.hasData){
               return const Home();
-            }else{
+            } else {
               return const Login();
             }
           },

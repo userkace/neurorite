@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:neurorite/screens/home.dart';
 import 'package:neurorite/auth/signup.dart';
 import 'package:neurorite/theme/theme.dart';
+
+import 'auth.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -55,6 +56,9 @@ class _LoginState extends State<Login> {
     try{
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
       if(context.mounted) Navigator.pop(context);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => const Auth(),
+      ));
     } on FirebaseAuthException catch (e){
       Navigator.pop(context);
       showDialog(
@@ -161,9 +165,7 @@ class _LoginState extends State<Login> {
                       data: AppTheme.enterButtonTheme,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const Home(),
-                          ));
+                          logIn();
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size.fromHeight(
