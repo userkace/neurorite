@@ -21,10 +21,10 @@ import 'package:firebase_auth/firebase_auth.dart';
     }
 
     Stream<QuerySnapshot> getNotesStream() {
-      final user = FirebaseAuth.instance.currentUser;
+      user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         return notes
-            .where('email', isEqualTo: user.email) // Filter by current user's email
+            .where('email', isEqualTo: user!.email) // Filter by current user's email
             .orderBy('timestamp', descending: true)
             .snapshots();
       } else {
