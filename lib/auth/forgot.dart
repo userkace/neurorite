@@ -3,42 +3,34 @@ import 'package:flutter/material.dart';
 import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
 
-class Signup extends StatefulWidget {
-  const Signup({super.key});
+class Forgot extends StatefulWidget {
+  const Forgot({super.key});
 
   @override
-  State<Signup> createState() => _SignupState();
+  State<Forgot> createState() => _ForgotState();
 }
 
-class _SignupState extends State<Signup>{
+class _ForgotState extends State<Forgot> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmController = TextEditingController();
 
   final FocusNode _eFocusNode = FocusNode();
-  final FocusNode _pFocusNode = FocusNode();
-  final FocusNode _cFocusNode = FocusNode();// FocusNode for text fields
   bool _isTextFieldFocused = false; // State variable for focus
 
   @override
   void initState() {
     super.initState();
     _eFocusNode.addListener(_onFocusChange);
-    _pFocusNode.addListener(_onFocusChange);
-    _cFocusNode.addListener(_onFocusChange);// Attach listener
   }
 
   @override
   void dispose() {
     _eFocusNode.dispose();
-    _pFocusNode.dispose();
-    _cFocusNode.dispose();// Dispose FocusNode
     super.dispose();
   }
 
   void _onFocusChange() {
     setState(() {
-      if ((_eFocusNode.hasFocus || _pFocusNode.hasFocus) || _cFocusNode.hasFocus){
+      if (_eFocusNode.hasFocus) {
         _isTextFieldFocused = true;
       } else {
         _isTextFieldFocused = false;
@@ -46,33 +38,8 @@ class _SignupState extends State<Signup>{
     });
   }
 
-  Future<UserCredential?> signUp() async{
-    showDialog(
-        context: context,
-        builder: (context) =>
-            const Center(
-                child: CircularProgressIndicator(color: AppTheme.tertiary)
-            ),
-    );
-    if (_passwordController.text != _confirmController.text){
-      Navigator.pop(context);
-      return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: const Text('Passwords are not the same.'),
-          contentTextStyle: const TextStyle(color: Colors.white),
-          backgroundColor: const Color(0xFF0f0f0f),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    } else if (_passwordController.text.isEmpty) {
+  Future<UserCredential?> forgot() async {
+    if (_emailController.text.isEmpty) {
       Navigator.pop(context);
       return showDialog(
         context: context,
@@ -90,36 +57,20 @@ class _SignupState extends State<Signup>{
           ],
         ),
       );
-  } else if (_passwordController.text.length < 6) {
-      Navigator.pop(context);
-      return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: const Text('Password must be at least 6 characters long.'),
-          contentTextStyle: const TextStyle(color: Colors.white),
-          backgroundColor: const Color(0xFF0f0f0f),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
     } else {
-      try{
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+      try {
+        await FirebaseAuth.instance
+            .sendPasswordResetEmail(email: _emailController.text);
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const Login(),
         ));
-        return showDialog(
+        showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Success'),
             titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-            content: const Text('Account created!'),
+            content: Text(
+                'Password reset has been sent to your inbox. ${_emailController.text}'),
             contentTextStyle: const TextStyle(color: Colors.white),
             backgroundColor: const Color(0xFF0f0f0f),
             actions: [
@@ -130,9 +81,9 @@ class _SignupState extends State<Signup>{
             ],
           ),
         );
-      } on FirebaseAuthException catch (e){
+      } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
-        return showDialog(
+        showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Error'),
@@ -150,6 +101,7 @@ class _SignupState extends State<Signup>{
         );
       }
     }
+    return null;
   }
 
   @override
@@ -174,7 +126,7 @@ class _SignupState extends State<Signup>{
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       GradientText(
-                        "Create account",
+                        "Forgot password",
                         style: const TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -202,30 +154,6 @@ class _SignupState extends State<Signup>{
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16.0),
-                          TextField(
-                            controller: _passwordController,
-                            focusNode: _pFocusNode,
-                            decoration: const InputDecoration(
-                              labelText: "Password",
-                              labelStyle: TextStyle(
-                                fontFamily: 'Outfit',
-                              ),
-                            ),
-                            obscureText: true,
-                          ),
-                          const SizedBox(height: 16.0),
-                          TextField(
-                            controller: _confirmController,
-                            focusNode: _cFocusNode,
-                            decoration: const InputDecoration(
-                              labelText: "Confirm Password",
-                              labelStyle: TextStyle(
-                                fontFamily: 'Outfit',
-                              ),
-                            ),
-                            obscureText: true,
-                          ),
                         ]),
                       ),
                       const SizedBox(height: 30.0),
@@ -233,7 +161,7 @@ class _SignupState extends State<Signup>{
                         data: AppTheme.enterButtonTheme,
                         child: ElevatedButton(
                           onPressed: () async {
-                            await signUp();
+                            await forgot();
                           },
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size.fromHeight(55),
@@ -242,7 +170,7 @@ class _SignupState extends State<Signup>{
                             ),
                           ),
                           child: const Text(
-                            "Sign up",
+                            "Confirm",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Outfit',
@@ -262,25 +190,26 @@ class _SignupState extends State<Signup>{
                 padding: const EdgeInsets.only(
                     bottom: 5.0), // Slight padding from bottom
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const Login(),
-                    ));
-                  },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Already have an account? ",
-                        style: TextStyle(fontFamily: 'Outfit', color: AppTheme.secondary),
-                      ),
-                      Text(
-                        "Login",
-                        style: TextStyle(fontFamily: 'Outfit', color: Colors.white),
-                      ),
-                    ],
-                  )
-                ),
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const Login(),
+                      ));
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Already have an account? ",
+                          style: TextStyle(
+                              fontFamily: 'Outfit', color: AppTheme.secondary),
+                        ),
+                        Text(
+                          "Login",
+                          style: TextStyle(
+                              fontFamily: 'Outfit', color: Colors.white),
+                        ),
+                      ],
+                    )),
               ),
             ),
           ],

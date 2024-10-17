@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/auth/signup.dart';
 import 'package:neurorite/theme/theme.dart';
-
-import 'auth.dart';
+import 'package:neurorite/auth/auth.dart';
+import 'package:neurorite/auth/forgot.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -149,14 +149,19 @@ class _LoginState extends State<Login> {
                     ),
 
                     const SizedBox(height: 15.0),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(
-                          'Forgot password?',
-                          style: TextStyle(color:Colors.white),
+                        TextButton(
+                          child: const Text('Forgot password?',
+                          style: TextStyle(color:Colors.white),),
+                          onPressed: () {
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => const Forgot(),
+                            ));
+                          },
                         ),
-                        SizedBox(width: 10.0),
+                        const SizedBox(width: 10.0),
                       ],
                     ),
                     const SizedBox(height: 20.0),
