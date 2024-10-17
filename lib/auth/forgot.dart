@@ -40,13 +40,13 @@ class _ForgotState extends State<Forgot> {
 
   Future<UserCredential?> forgot() async {
     if (_emailController.text.isEmpty) {
-      Navigator.pop(context);
-      return showDialog(
+      await Navigator.of(context).pop;
+      showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
           titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: const Text('Password cannot be empty.'),
+          content: const Text('Email cannot be empty.'),
           contentTextStyle: const TextStyle(color: Colors.white),
           backgroundColor: const Color(0xFF0f0f0f),
           actions: [
@@ -82,7 +82,7 @@ class _ForgotState extends State<Forgot> {
           ),
         );
       } on FirebaseAuthException catch (e) {
-        Navigator.pop(context);
+        Navigator.of(context).pop;
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -199,7 +199,7 @@ class _ForgotState extends State<Forgot> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Already have an account? ",
+                          "Remember your password? ",
                           style: TextStyle(
                               fontFamily: 'Outfit', color: AppTheme.secondary),
                         ),

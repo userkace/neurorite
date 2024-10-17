@@ -50,7 +50,7 @@ class _LoginState extends State<Login> {
       context: context,
       builder: (context) =>
       const Center(
-          child: CircularProgressIndicator()
+          child: CircularProgressIndicator(color: AppTheme.tertiary)
       ),
     );
     try{
@@ -208,7 +208,7 @@ class _LoginState extends State<Login> {
                     children: [
                       Text(
                         "Don't have an account? ",
-                        style: TextStyle(fontFamily: 'Outfit', color: AppTheme.secondary),
+                        style: TextStyle(fontFamily: 'Outfit', color: AppTheme.primary),
                       ),
                       Text(
                         "Sign up",

@@ -128,14 +128,6 @@ class HomeState extends State<Home> {
                       return const SizedBox.shrink();
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      Fluttertoast.showToast(
-                        msg: "Loading...",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        backgroundColor: Colors.black54,
-                        textColor: Colors.purple,
-                        fontSize: 16.0,
-                      );
                       return const SizedBox.shrink();
                     }
 
@@ -532,8 +524,7 @@ class HomeState extends State<Home> {
     }
 
     // Fetch latest notes from Firestore
-    final snapshot =
-        await firestoreService.getNotesStream().first; // Get first snapshot
+    final snapshot = await firestoreService.getNotesStream().first; // Get first snapshot
     final firestoreNotes = snapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       return Note(

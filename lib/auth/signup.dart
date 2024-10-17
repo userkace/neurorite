@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/auth/login.dart';
@@ -45,6 +46,18 @@ class _SignupState extends State<Signup>{
       }
     });
   }
+
+  Future<void> createUserDocument(UserCredential? userCredential) async {
+    if (userCredential != null && userCredential.user != null) {
+      await FirebaseFirestore.instance.collection('users')
+          .doc(userCredential.user!.email)
+          .set({
+            'email': userCredential.user!.email,
+            'profile': 0
+          });
+    }
+  }
+
 
   Future<UserCredential?> signUp() async{
     showDialog(
@@ -110,10 +123,14 @@ class _SignupState extends State<Signup>{
       );
     } else {
       try{
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
+        UserCredential? userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+        createUserDocument(userCredential);
+
+        if (context.mounted) {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const Login(),
-        ));
+          ));
+        }
         return showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -150,6 +167,7 @@ class _SignupState extends State<Signup>{
         );
       }
     }
+    return null;
   }
 
   @override
@@ -272,7 +290,7 @@ class _SignupState extends State<Signup>{
                     children: [
                       Text(
                         "Already have an account? ",
-                        style: TextStyle(fontFamily: 'Outfit', color: AppTheme.secondary),
+                        style: TextStyle(fontFamily: 'Outfit', color: AppTheme.primary),
                       ),
                       Text(
                         "Login",
