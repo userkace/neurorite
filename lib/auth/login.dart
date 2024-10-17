@@ -104,7 +104,7 @@ class _LoginState extends State<Login> {
 
                     GradientText("Neurorite",
                         style: const TextStyle(
-                          fontSize: 50,
+                          fontSize: 55,
                           fontWeight: FontWeight.bold,
                           fontFamily:
                               'Satisfy', //GoogleFonts.getFont('Satisfy').fontFamily,
@@ -147,8 +147,6 @@ class _LoginState extends State<Login> {
                         ),
                       ]),
                     ),
-
-                    const SizedBox(height: 15.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -161,10 +159,9 @@ class _LoginState extends State<Login> {
                             ));
                           },
                         ),
-                        const SizedBox(width: 10.0),
                       ],
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 10.0),
 
                     Theme(
                       data: AppTheme.enterButtonTheme,
