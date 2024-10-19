@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:neurorite/models/firestore.dart';
 import 'package:neurorite/utils/unsaved.dart';
 import 'package:neurorite/utils/error.dart';
@@ -53,6 +55,7 @@ class NotePageState extends State<NotePage> {
 
   String _initialTitle = '';
   String _initialContent = '';
+  bool _isEditing = false;
 
   @override
   void initState() {
@@ -165,80 +168,210 @@ class NotePageState extends State<NotePage> {
                   },
                 ),
               if (widget.note != null)
-                PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == 'save') {
-                      _saveNote();
-                    } else if (value == 'delete') {
-                      _deleteNote();
-                    }
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 0),
-                        value: 'save',
-                        child: ListTile(
-                          leading: const Icon(Icons.save_rounded,
-                              color: Colors.white70), // Set icon color
-                          title: const Text('Save',
-                              style: TextStyle(
-                                  color: Colors.white70)), // Set text color
-                          onTap: () {
-                            Navigator.pop(context, 'save');
-                          },
-                        ),
-                      ),
-                      PopupMenuItem(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 0),
-                        value: 'delete',
-                        child: ListTile(
-                          leading: const Icon(Icons.delete_forever_rounded,
-                              color: Colors.white70), // Set icon color
-                          title: const Text('Delete',
-                              style: TextStyle(
-                                  color: Colors.white70)), // Set text color
-                          onTap: () {
-                            Navigator.pop(context, 'delete');
-                          },
-                        ),
-                      ),
-                    ];
+                IconButton(
+                  icon:
+                      Icon(_isEditing ? Icons.done : Icons.text_fields_rounded),
+                  onPressed: () async {
+                    setState(() {
+                      _isEditing = !_isEditing; // Toggle editing state
+                    });
                   },
                 ),
+              // PopupMenuButton<String>(
+              //   onSelected: (value) {
+              //     if (value == 'save') {
+              //       _saveNote();
+              //     } else if (value == 'delete') {
+              //       _deleteNote();
+              //     }
+              //   },
+              //   shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(16.0),
+              //   ),
+              //   itemBuilder: (BuildContext context) {
+              //     return [
+              //       PopupMenuItem(
+              //         padding: const EdgeInsets.symmetric(
+              //             horizontal: 16, vertical: 0),
+              //         value: 'save',
+              //         child: ListTile(
+              //           leading: const Icon(Icons.save_rounded,
+              //               color: Colors.white70), // Set icon color
+              //           title: const Text('Save',
+              //               style: TextStyle(
+              //                   color: Colors.white70)), // Set text color
+              //           onTap: () {
+              //             Navigator.pop(context, 'save');
+              //           },
+              //         ),
+              //       ),
+              //       PopupMenuItem(
+              //         padding: const EdgeInsets.symmetric(
+              //             horizontal: 16, vertical: 0),
+              //         value: 'delete',
+              //         child: ListTile(
+              //           leading: const Icon(Icons.delete_forever_rounded,
+              //               color: Colors.white70), // Set icon color
+              //           title: const Text('Delete',
+              //               style: TextStyle(
+              //                   color: Colors.white70)), // Set text color
+              //           onTap: () {
+              //             Navigator.pop(context, 'delete');
+              //           },
+              //         ),
+              //       ),
+              //     ];
+              //   },
+              // ),
             ],
           ),
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
-            child: SizedBox.expand( // Use SizedBox.expand instead of Expanded
-              child: TextField(
-                controller: _contentController,
-                maxLines: null, // Allow unlimited lines
-                expands: true,  // Enable expands property
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: 'Enter your note',
-                  hintStyle: TextStyle(color: Colors.white54),
-                  border: InputBorder.none,
-                ),
-                onTap: () {
-                  // Set cursor to the end of the text when tapped
-                  _contentController.selection = TextSelection.fromPosition(
-                    TextPosition(offset: _contentController.text.length),
-                  );
-                },
-              ),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+            child: SizedBox.expand(
+              child: _isEditing
+                  ? TextField(
+                      controller: _contentController,
+                      maxLines: null,
+                      expands: true,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        hintText: 'Enter your note',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        border: InputBorder.none,
+                      ),
+                    )
+                  : GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isEditing = true; // Switch to editing mode on tap
+                        });
+                      },
+                      child: Markdown(
+                        data: _contentController.text.isEmpty
+                            ? 'Enter your note'
+                            : _contentController.text,
+                        padding: EdgeInsets.zero,
+                        styleSheet: MarkdownStyleSheet(
+                          h1: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Outfit',
+                              fontSize: 32),
+                          h2: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Outfit',
+                              fontSize: 24),
+                          h3: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Outfit',
+                              fontSize: 20),
+                          h4: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Outfit',
+                              fontSize: 18),
+                          h5: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Outfit',
+                              fontSize: 16),
+                          h6: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Outfit',
+                              fontSize: 16),
+                          p: const TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Outfit',
+                              fontSize: 16),
+                          listBullet: const TextStyle(
+                              color: Colors.white, fontFamily: 'Outfit'),
+                          code: const TextStyle(
+                              color: Colors.white70, fontFamily: 'Outfit'),
+                          codeblockDecoration: BoxDecoration(
+                            color: Colors.black, // Light gray background
+                            borderRadius:
+                                BorderRadius.circular(8), // Rounded corners
+                          ),
+                          blockquote: const TextStyle(
+                              color: Colors.white70, fontFamily: 'Outfit'),
+                          blockquoteDecoration: BoxDecoration(
+                            color: Colors.black, // Light gray background
+                            borderRadius:
+                                BorderRadius.circular(8), // Rounded corners
+                          ),
+                          horizontalRuleDecoration: const BoxDecoration(
+                            border: Border(
+                              top: BorderSide(
+                                color: Colors.white54, // Set the color to blue
+                                width:
+                                    1.0, // Optional: Adjust the width of the line
+                              ),
+                            ),
+                          ),
+                        ),
+                        onTapLink: (text, href, title) async {
+                          if (href != null) {
+                            final Uri url = Uri.parse(href);
+                            if (!await launchUrl(url)) {
+                              throw Exception('Could not launch $url');
+                            }
+                          }
+                        },
+                      ),
+                    ),
             ),
           ),
+          // floatingActionButton: FloatingActionButton(
+          //   backgroundColor: Color(0xFF0f0f0f),
+          //   foregroundColor: Colors.purple,
+          //   onPressed: () {
+          //     setState(() {
+          //       _isEditing = !_isEditing; // Toggle editing state
+          //     });
+          //   },
+          //   child: Icon(_isEditing ? Icons.done : Icons.text_fields_rounded),
+          // ),
         ),
       ),
     );
   }
+
+  // body: Padding(
+  //   padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+  //   child: SizedBox.expand(
+  //     child: Markdown(
+  //       data: _contentController.text, // Use contentController's text
+  //       styleSheet: MarkdownStyleSheet(
+  //         // Customize styles if needed
+  //         p: const TextStyle(color: Colors.white), // Example: set paragraph color
+  //       ),
+  //       onTapLink: (text, href, title) {
+  //         // Handle link taps if needed
+  //       },
+  //     ),
+  //   ),
+
+  // child: SizedBox.expand( // Use SizedBox.expand instead of Expanded
+  //   child: TextField(
+  //     controller: _contentController,
+  //     maxLines: null, // Allow unlimited lines
+  //     expands: true,  // Enable expands property
+  //     style: const TextStyle(color: Colors.white),
+  //     decoration: const InputDecoration(
+  //       hintText: 'Enter your note',
+  //       hintStyle: TextStyle(color: Colors.white54),
+  //       border: InputBorder.none,
+  //     ),
+  //     onTap: () {
+  //       // Set cursor to the end of the text when tapped
+  //       _contentController.selection = TextSelection.fromPosition(
+  //         TextPosition(offset: _contentController.text.length),
+  //       );
+  //     },
+  //   ),
+  // ),
+  //         ),
+  //       ),
+  //     );
+  // }
 
   void _saveNote() async {
     if (_titleController.text.isNotEmpty) {
