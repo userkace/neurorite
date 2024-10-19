@@ -56,7 +56,11 @@ class DialogBackground extends StatelessWidget {
   final Widget? child;
   final bool isTextFieldFocused;
 
-  const DialogBackground({super.key, required this.child, required this.isTextFieldFocused, });
+  const DialogBackground({
+    super.key,
+    required this.child,
+    required this.isTextFieldFocused,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +70,13 @@ class DialogBackground extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
           child: Container(
-              width:  isTextFieldFocused
+              width: isTextFieldFocused
                   ? MediaQuery.of(context).size.width
                   : MediaQuery.of(context).size.width - 50,
               height: isTextFieldFocused
-                  ? MediaQuery.of(context).size.height // Max height when focused
+                  ? MediaQuery.of(context)
+                      .size
+                      .height // Max height when focused
                   : MediaQuery.of(context).size.height - 250,
               decoration: BoxDecoration(
                 color: const Color(0x54FFFFFF),

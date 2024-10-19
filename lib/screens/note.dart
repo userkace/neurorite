@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:neurorite/services/firestore.dart';
-import 'package:neurorite/models/unsaved.dart';
-import 'package:neurorite/models/error.dart';
+import 'package:neurorite/models/firestore.dart';
+import 'package:neurorite/utils/unsaved.dart';
+import 'package:neurorite/utils/error.dart';
 
 final FirestoreService firestoreService = FirestoreService();
 
@@ -58,11 +58,12 @@ class NotePageState extends State<NotePage> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.note?.title ?? '');
-    _contentController = TextEditingController(text: widget.note?.content ?? '');
+    _contentController =
+        TextEditingController(text: widget.note?.content ?? '');
     _initialTitle = _titleController.text;
     _initialContent = _contentController.text;
 
-    if (widget.note!= null){
+    if (widget.note != null) {
       _titleController.addListener(_onTextChanged);
       _contentController.addListener(_onTextChanged);
     }
@@ -136,16 +137,18 @@ class NotePageState extends State<NotePage> {
                   }
                 }),
             actions: [
-              if (widget.note == null ) Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: IconButton(
-                  icon: const Icon(Icons.save),
-                  onPressed: () {
-                    _saveNote();
-                  },
+              if (widget.note == null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: IconButton(
+                    icon: const Icon(Icons.save),
+                    onPressed: () {
+                      _saveNote();
+                    },
+                  ),
                 ),
-              ),
-              if (widget.note != null) IconButton(
+              if (widget.note != null)
+                IconButton(
                   icon: Icon(widget.note?.isPinned ?? false
                       ? Icons.push_pin
                       : Icons.push_pin_outlined),
@@ -161,52 +164,53 @@ class NotePageState extends State<NotePage> {
                     );
                   },
                 ),
-              if (widget.note != null) PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'save') {
-                    _saveNote();
-                  } else if (value == 'delete') {
-                    _deleteNote();
-                  }
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+              if (widget.note != null)
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'save') {
+                      _saveNote();
+                    } else if (value == 'delete') {
+                      _deleteNote();
+                    }
+                  },
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 0),
+                        value: 'save',
+                        child: ListTile(
+                          leading: const Icon(Icons.save_rounded,
+                              color: Colors.white70), // Set icon color
+                          title: const Text('Save',
+                              style: TextStyle(
+                                  color: Colors.white70)), // Set text color
+                          onTap: () {
+                            Navigator.pop(context, 'save');
+                          },
+                        ),
+                      ),
+                      PopupMenuItem(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 0),
+                        value: 'delete',
+                        child: ListTile(
+                          leading: const Icon(Icons.delete_forever_rounded,
+                              color: Colors.white70), // Set icon color
+                          title: const Text('Delete',
+                              style: TextStyle(
+                                  color: Colors.white70)), // Set text color
+                          onTap: () {
+                            Navigator.pop(context, 'delete');
+                          },
+                        ),
+                      ),
+                    ];
+                  },
                 ),
-                itemBuilder: (BuildContext context) {
-                  return [
-                    PopupMenuItem(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 0),
-                      value: 'save',
-                      child: ListTile(
-                        leading: const Icon(Icons.save_rounded,
-                            color: Colors.white70), // Set icon color
-                        title: const Text('Save',
-                            style: TextStyle(
-                                color: Colors.white70)), // Set text color
-                        onTap: () {
-                          Navigator.pop(context, 'save');
-                        },
-                      ),
-                    ),
-                    PopupMenuItem(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 0),
-                      value: 'delete',
-                      child: ListTile(
-                        leading: const Icon(Icons.delete_forever_rounded,
-                            color: Colors.white70), // Set icon color
-                        title: const Text('Delete',
-                            style: TextStyle(
-                                color: Colors.white70)), // Set text color
-                        onTap: () {
-                          Navigator.pop(context, 'delete');
-                        },
-                      ),
-                    ),
-                  ];
-                },
-              ),
             ],
           ),
           body: Padding(
@@ -232,21 +236,21 @@ class NotePageState extends State<NotePage> {
 
   void _saveNote() async {
     if (_titleController.text.isNotEmpty) {
-    try {
-      if (widget.note != null && widget.note!.id.isNotEmpty) {
-        await firestoreService.updateNote(
-          widget.note!.id,
-          _titleController.text,
-          _contentController.text,
-          widget.note?.isPinned ?? false,
-        );
-      } else {
-        await firestoreService.addNote(
-          _titleController.text,
-          _contentController.text,
-          widget.note?.isPinned ?? false,
-        );
-      }
+      try {
+        if (widget.note != null && widget.note!.id.isNotEmpty) {
+          await firestoreService.updateNote(
+            widget.note!.id,
+            _titleController.text,
+            _contentController.text,
+            widget.note?.isPinned ?? false,
+          );
+        } else {
+          await firestoreService.addNote(
+            _titleController.text,
+            _contentController.text,
+            widget.note?.isPinned ?? false,
+          );
+        }
         Navigator.pop(context);
         widget.onSave?.call();
       } catch (e) {
@@ -267,15 +271,17 @@ class NotePageState extends State<NotePage> {
           ),
         );
       }
-    } else if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+    } else if (_titleController.text.isEmpty ||
+        _contentController.text.isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => const ErrorDialog(title: 'Error', content: 'Title or content cannot be empty.'),
+        builder: (context) => const ErrorDialog(
+            title: 'Error', content: 'Title or content cannot be empty.'),
       );
     }
   }
 
-  void _autoSaveNote() async{
+  void _autoSaveNote() async {
     if (_titleController.text.isNotEmpty) {
       try {
         if (widget.note != null && widget.note!.id.isNotEmpty) {
@@ -311,10 +317,12 @@ class NotePageState extends State<NotePage> {
           ),
         );
       }
-    } else if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+    } else if (_titleController.text.isEmpty ||
+        _contentController.text.isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => const ErrorDialog(title: 'Error', content: 'Title or content cannot be empty.'),
+        builder: (context) => const ErrorDialog(
+            title: 'Error', content: 'Title or content cannot be empty.'),
       );
     }
   }
@@ -357,7 +365,4 @@ class NotePageState extends State<NotePage> {
       _initialContent = _contentController.text;
     }
   }
-
 }
-
-

@@ -4,7 +4,7 @@ import 'package:neurorite/auth/signup.dart';
 import 'package:neurorite/theme/theme.dart';
 import 'package:neurorite/auth/auth.dart';
 import 'package:neurorite/auth/forgot.dart';
-import 'package:neurorite/models/error.dart';
+import 'package:neurorite/utils/error.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -17,28 +17,26 @@ class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FocusNode _eFocusNode = FocusNode();
-  final FocusNode _pFocusNode = FocusNode();// FocusNode for text fields
+  final FocusNode _pFocusNode = FocusNode(); // FocusNode for text fields
   bool _isTextFieldFocused = false; // State variable for focus
-
-
 
   @override
   void initState() {
     super.initState();
     _eFocusNode.addListener(_onFocusChange);
-    _pFocusNode.addListener(_onFocusChange);// Attach listener
+    _pFocusNode.addListener(_onFocusChange); // Attach listener
   }
 
   @override
   void dispose() {
     _eFocusNode.dispose();
-    _pFocusNode.dispose();// Dispose FocusNode
+    _pFocusNode.dispose(); // Dispose FocusNode
     super.dispose();
   }
 
   void _onFocusChange() {
     setState(() {
-      if (_eFocusNode.hasFocus || _pFocusNode.hasFocus){
+      if (_eFocusNode.hasFocus || _pFocusNode.hasFocus) {
         _isTextFieldFocused = true;
       } else {
         _isTextFieldFocused = false;
@@ -46,25 +44,25 @@ class _LoginState extends State<Login> {
     });
   }
 
-  void logIn() async{
+  void logIn() async {
     showDialog(
       context: context,
-      builder: (context) =>
-      const Center(
-          child: CircularProgressIndicator(color: AppTheme.tertiary)
-      ),
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(color: AppTheme.tertiary)),
     );
-    try{
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-      if(context.mounted) Navigator.pop(context);
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+      if (context.mounted) Navigator.pop(context);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => const Auth(),
       ));
-    } on FirebaseAuthException catch (e){
+    } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       showDialog(
         context: context,
-        builder: (context) => ErrorDialog(title: 'Error', content: 'Error with log in: $e'),
+        builder: (context) =>
+            ErrorDialog(title: 'Error', content: 'Error with log in: $e'),
       );
     }
   }
@@ -90,7 +88,6 @@ class _LoginState extends State<Login> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-
                     GradientText("Neurorite",
                         style: const TextStyle(
                           fontSize: 55,
@@ -106,7 +103,6 @@ class _LoginState extends State<Login> {
                               Theme.of(context).colorScheme.secondary,
                             ])),
                     const SizedBox(height: 24.0),
-
                     Theme(
                       data: AppTheme.textFieldTheme,
                       child: Column(children: <Widget>[
@@ -140,10 +136,13 @@ class _LoginState extends State<Login> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          child: const Text('Forgot password?',
-                          style: TextStyle(color:Colors.white),),
+                          child: const Text(
+                            'Forgot password?',
+                            style: TextStyle(color: Colors.white),
+                          ),
                           onPressed: () {
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            Navigator.of(context)
+                                .pushReplacement(MaterialPageRoute(
                               builder: (context) => const Forgot(),
                             ));
                           },
@@ -151,7 +150,6 @@ class _LoginState extends State<Login> {
                       ],
                     ),
                     const SizedBox(height: 10.0),
-
                     Theme(
                       data: AppTheme.enterButtonTheme,
                       child: ElevatedButton(
@@ -170,7 +168,7 @@ class _LoginState extends State<Login> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily:
-                            'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
+                                'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
                           ),
                         ),
                       ),
@@ -178,34 +176,33 @@ class _LoginState extends State<Login> {
                   ],
                 ),
               ),
-            )
-            ),
-
+            )),
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: const EdgeInsets.only(
                     bottom: 5.0), // Slight padding from bottom
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const Signup(),
-                    ));
-                  },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Don't have an account? ",
-                        style: TextStyle(fontFamily: 'Outfit', color: AppTheme.primary),
-                      ),
-                      Text(
-                        "Sign up",
-                        style: TextStyle(fontFamily: 'Outfit', color: Colors.white),
-                      ),
-                    ],
-                  )
-                ),
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const Signup(),
+                      ));
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't have an account? ",
+                          style: TextStyle(
+                              fontFamily: 'Outfit', color: AppTheme.primary),
+                        ),
+                        Text(
+                          "Sign up",
+                          style: TextStyle(
+                              fontFamily: 'Outfit', color: Colors.white),
+                        ),
+                      ],
+                    )),
               ),
             ),
           ],

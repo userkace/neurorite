@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ErrorDialog extends StatelessWidget {
   final String title;
   final String content;
+
   const ErrorDialog({super.key, required this.title, required this.content});
 
   @override
@@ -22,4 +23,3 @@ class ErrorDialog extends StatelessWidget {
     );
   }
 }
-

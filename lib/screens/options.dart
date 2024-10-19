@@ -74,80 +74,78 @@ class _OptionsState extends State<Options> {
                 String path = 'assets/profiles/$profile.png';
                 return Center(
                   child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Profile picture slot
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              10.0), // Adjust radius as needed
-                          child: Image.asset(
-                            path,
-                            width: 100, // Adjust size as needed
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Profile picture slot
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                            10.0), // Adjust radius as needed
+                        child: Image.asset(
+                          path,
+                          width: 100, // Adjust size as needed
+                          height: 100,
+                          fit: BoxFit.cover,
                         ),
-                        const SizedBox(height: 12),
+                      ),
+                      const SizedBox(height: 12),
 
-                        // Email
-                        Text(
-                          user!['email'], // Replace with user's email
-                          style: const TextStyle(
-                              fontSize: 18, color:
-                          Colors.white, fontWeight:
-                          FontWeight.bold),
-                        ),
-                        const SizedBox(height: 20),
-                        // Logout button
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        10.0), // Adjust the radius as needed
-                                  ),
-                                  backgroundColor:
-                                      Colors.white38, // Customize button color
-                                ),
-                                child: const HugeIcon(
-                                  icon: HugeIcons.strokeRoundedAiUser,
-                                  color: Colors.white,
-                                  size: 30.0,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            ElevatedButton(
-                              onPressed: () async {
-                                await FirebaseAuth.instance.signOut();
-                                Navigator.pop(context);
-                              },
+                      // Email
+                      Text(
+                        user!['email'], // Replace with user's email
+                        style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 20),
+                      // Logout button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: ElevatedButton(
+                              onPressed: () {},
                               style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.zero,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(
                                       10.0), // Adjust the radius as needed
                                 ),
                                 backgroundColor:
-                                    AppTheme.tertiary, // Customize button color
+                                    Colors.white38, // Customize button color
                               ),
-                              child: const Text(
-                                'Logout',
-                                style: TextStyle(color: Colors.white),
+                              child: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedAiUser,
+                                color: Colors.white,
+                                size: 30.0,
                               ),
                             ),
-                          ],
-                        )
-                      ],
-                    ),
-
-
+                          ),
+                          const SizedBox(width: 16),
+                          ElevatedButton(
+                            onPressed: () async {
+                              await FirebaseAuth.instance.signOut();
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    10.0), // Adjust the radius as needed
+                              ),
+                              backgroundColor:
+                                  AppTheme.tertiary, // Customize button color
+                            ),
+                            child: const Text(
+                              'Logout',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 );
               }
               throw FirebaseAuthException(code: 'No Data');

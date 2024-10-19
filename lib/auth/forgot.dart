@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
-import 'package:neurorite/models/error.dart';
+import 'package:neurorite/utils/error.dart';
 
 class Forgot extends StatefulWidget {
   const Forgot({super.key});
@@ -49,7 +49,8 @@ class _ForgotState extends State<Forgot> {
       Navigator.of(context).pop;
       showDialog(
         context: context,
-        builder: (context) => const ErrorDialog(title: 'Error', content: 'Email cannot be empty.'),
+        builder: (context) => const ErrorDialog(
+            title: 'Error', content: 'Email cannot be empty.'),
       );
     } else {
       try {
@@ -57,7 +58,10 @@ class _ForgotState extends State<Forgot> {
             .sendPasswordResetEmail(email: _emailController.text);
         await showDialog(
           context: context,
-          builder: (context) => ErrorDialog(title: 'Success', content: 'Password reset has been sent to your inbox. ${_emailController.text}'),
+          builder: (context) => ErrorDialog(
+              title: 'Success',
+              content:
+                  'Password reset has been sent to your inbox. ${_emailController.text}'),
         );
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const Login(),
@@ -66,7 +70,8 @@ class _ForgotState extends State<Forgot> {
         Navigator.of(context).pop;
         showDialog(
           context: context,
-          builder: (context) => ErrorDialog(title: 'Error', content: 'Error with sign up: $e'),
+          builder: (context) =>
+              ErrorDialog(title: 'Error', content: 'Error with sign up: $e'),
         );
       }
     }
@@ -132,45 +137,56 @@ class _ForgotState extends State<Forgot> {
                           onPressed: _isButtonDisabled
                               ? null // Disable button if flag is true
                               : () async {
-                            setState(() {
-                              _isButtonDisabled = true; // Disable button on click
-                            });
-                            await forgot();
-                            // Re-enable button after a timeout
-                            _timer = Timer(const Duration(seconds: 5), () { // 5-second timeout
-                              setState(() {
-                                _isButtonDisabled = false;
-                              });
-                            });
-                          },
+                                  setState(() {
+                                    _isButtonDisabled =
+                                        true; // Disable button on click
+                                  });
+                                  await forgot();
+                                  // Re-enable button after a timeout
+                                  _timer =
+                                      Timer(const Duration(seconds: 5), () {
+                                    // 5-second timeout
+                                    setState(() {
+                                      _isButtonDisabled = false;
+                                    });
+                                  });
+                                },
                           style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                                  (Set<WidgetState> states) {
+                            backgroundColor:
+                                WidgetStateProperty.resolveWith<Color>(
+                              (Set<WidgetState> states) {
                                 if (states.contains(WidgetState.disabled)) {
-                                  return Colors.transparent; // or Colors.red, your preferred disabled color
+                                  return Colors
+                                      .transparent; // or Colors.red, your preferred disabled color
                                 } else {
-                                  return AppTheme.tertiary; // your enabled color
+                                  return AppTheme
+                                      .tertiary; // your enabled color
                                 }
                               },
                             ),
-                            foregroundColor: WidgetStateProperty.resolveWith<Color>(
-                                  (Set<WidgetState> states) {
+                            foregroundColor:
+                                WidgetStateProperty.resolveWith<Color>(
+                              (Set<WidgetState> states) {
                                 if (states.contains(WidgetState.disabled)) {
-                                  return Colors.transparent; // Your preferred disabled color
+                                  return Colors
+                                      .transparent; // Your preferred disabled color
                                 } else {
-                                  return Colors.white; // Use default foreground color
+                                  return Colors
+                                      .white; // Use default foreground color
                                 }
                               },
                             ),
-                            minimumSize: WidgetStateProperty.all(const Size.fromHeight(55)),
-                            textStyle: WidgetStateProperty.all(const TextStyle(fontSize: 18)),
+                            minimumSize: WidgetStateProperty.all(
+                                const Size.fromHeight(55)),
+                            textStyle: WidgetStateProperty.all(
+                                const TextStyle(fontSize: 18)),
                           ),
                           child: const Text(
                             "Confirm",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontFamily:
-                              'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
+                                  'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
                             ),
                           ),
                         ),

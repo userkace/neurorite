@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
-import 'package:neurorite/models/error.dart';
+import 'package:neurorite/utils/error.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -12,14 +12,14 @@ class Signup extends StatefulWidget {
   State<Signup> createState() => _SignupState();
 }
 
-class _SignupState extends State<Signup>{
+class _SignupState extends State<Signup> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
 
   final FocusNode _eFocusNode = FocusNode();
   final FocusNode _pFocusNode = FocusNode();
-  final FocusNode _cFocusNode = FocusNode();// FocusNode for text fields
+  final FocusNode _cFocusNode = FocusNode(); // FocusNode for text fields
   bool _isTextFieldFocused = false; // State variable for focus
 
   @override
@@ -27,20 +27,21 @@ class _SignupState extends State<Signup>{
     super.initState();
     _eFocusNode.addListener(_onFocusChange);
     _pFocusNode.addListener(_onFocusChange);
-    _cFocusNode.addListener(_onFocusChange);// Attach listener
+    _cFocusNode.addListener(_onFocusChange); // Attach listener
   }
 
   @override
   void dispose() {
     _eFocusNode.dispose();
     _pFocusNode.dispose();
-    _cFocusNode.dispose();// Dispose FocusNode
+    _cFocusNode.dispose(); // Dispose FocusNode
     super.dispose();
   }
 
   void _onFocusChange() {
     setState(() {
-      if ((_eFocusNode.hasFocus || _pFocusNode.hasFocus) || _cFocusNode.hasFocus){
+      if ((_eFocusNode.hasFocus || _pFocusNode.hasFocus) ||
+          _cFocusNode.hasFocus) {
         _isTextFieldFocused = true;
       } else {
         _isTextFieldFocused = false;
@@ -50,29 +51,25 @@ class _SignupState extends State<Signup>{
 
   Future<void> createUserDocument(UserCredential? userCredential) async {
     if (userCredential != null && userCredential.user != null) {
-      await FirebaseFirestore.instance.collection('users')
+      await FirebaseFirestore.instance
+          .collection('users')
           .doc(userCredential.user!.email)
-          .set({
-            'email': userCredential.user!.email,
-            'profile': 0
-          });
+          .set({'email': userCredential.user!.email, 'profile': 0});
     }
   }
 
-
-  Future<UserCredential?> signUp() async{
+  Future<UserCredential?> signUp() async {
     showDialog(
-        context: context,
-        builder: (context) =>
-            const Center(
-                child: CircularProgressIndicator(color: AppTheme.tertiary)
-            ),
+      context: context,
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(color: AppTheme.tertiary)),
     );
-    if (_passwordController.text != _confirmController.text){
+    if (_passwordController.text != _confirmController.text) {
       Navigator.pop(context);
       return showDialog(
         context: context,
-        builder: (context) => const ErrorDialog(title: 'Error', content: 'Passwords are not the same.'),
+        builder: (context) => const ErrorDialog(
+            title: 'Error', content: 'Passwords are not the same.'),
       );
       return showDialog(
         context: context,
@@ -94,22 +91,28 @@ class _SignupState extends State<Signup>{
       Navigator.pop(context);
       return showDialog(
         context: context,
-        builder: (context) => const ErrorDialog(title: 'Error', content: 'Password cannot be empty'),
+        builder: (context) => const ErrorDialog(
+            title: 'Error', content: 'Password cannot be empty'),
       );
-  } else if (_passwordController.text.length < 6) {
+    } else if (_passwordController.text.length < 6) {
       Navigator.pop(context);
       return showDialog(
         context: context,
-        builder: (context) => const ErrorDialog(title: 'Error', content: 'Password must be at least 6 characters long.'),
+        builder: (context) => const ErrorDialog(
+            title: 'Error',
+            content: 'Password must be at least 6 characters long.'),
       );
     } else {
-      try{
-        UserCredential? userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+      try {
+        UserCredential? userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text);
         createUserDocument(userCredential);
 
         if (context.mounted) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const Login(),
+            builder: (context) => const Login(),
           ));
         }
         return showDialog(
@@ -128,11 +131,12 @@ class _SignupState extends State<Signup>{
             ],
           ),
         );
-      } on FirebaseAuthException catch (e){
+      } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
         return showDialog(
           context: context,
-          builder: (context) => ErrorDialog(title: 'Error', content: 'Error with sign up: $e'),
+          builder: (context) =>
+              ErrorDialog(title: 'Error', content: 'Error with sign up: $e'),
         );
       }
     }
@@ -249,25 +253,26 @@ class _SignupState extends State<Signup>{
                 padding: const EdgeInsets.only(
                     bottom: 5.0), // Slight padding from bottom
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const Login(),
-                    ));
-                  },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Already have an account? ",
-                        style: TextStyle(fontFamily: 'Outfit', color: AppTheme.primary),
-                      ),
-                      Text(
-                        "Login",
-                        style: TextStyle(fontFamily: 'Outfit', color: Colors.white),
-                      ),
-                    ],
-                  )
-                ),
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const Login(),
+                      ));
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Already have an account? ",
+                          style: TextStyle(
+                              fontFamily: 'Outfit', color: AppTheme.primary),
+                        ),
+                        Text(
+                          "Login",
+                          style: TextStyle(
+                              fontFamily: 'Outfit', color: Colors.white),
+                        ),
+                      ],
+                    )),
               ),
             ),
           ],
