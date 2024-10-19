@@ -214,18 +214,24 @@ class NotePageState extends State<NotePage> {
             ],
           ),
           body: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
-            child: TextField(
-              controller: _contentController,
-              maxLines: null,
-              style: const TextStyle(
-                  color: Colors.white), // Set text color to white
-              decoration: const InputDecoration(
-                hintText: 'Enter your note',
-                hintStyle:
-                    TextStyle(color: Colors.white54), // Set hint text color
-                border: InputBorder.none,
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+            child: SizedBox.expand( // Use SizedBox.expand instead of Expanded
+              child: TextField(
+                controller: _contentController,
+                maxLines: null, // Allow unlimited lines
+                expands: true,  // Enable expands property
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  hintText: 'Enter your note',
+                  hintStyle: TextStyle(color: Colors.white54),
+                  border: InputBorder.none,
+                ),
+                onTap: () {
+                  // Set cursor to the end of the text when tapped
+                  _contentController.selection = TextSelection.fromPosition(
+                    TextPosition(offset: _contentController.text.length),
+                  );
+                },
               ),
             ),
           ),
