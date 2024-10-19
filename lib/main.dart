@@ -1,9 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/firebase_options.dart';
-
-// ignore: unused_import
-import 'package:neurorite/screens/home.dart';
 import 'package:neurorite/theme/app_theme.dart';
 import 'package:neurorite/auth/auth.dart';
 

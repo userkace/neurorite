@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import 'package:neurorite/screens/home.dart';
+import 'package:neurorite/views/home.dart';
 import 'package:neurorite/auth/login.dart';
 
 class Auth extends StatelessWidget {

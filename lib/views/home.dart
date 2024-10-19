@@ -5,8 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'dart:convert';
 
-import 'package:neurorite/screens/note.dart';
-import 'package:neurorite/screens/options.dart';
+import 'package:neurorite/views/note.dart';
+import 'package:neurorite/views/options.dart';
 
 import 'package:neurorite/theme/theme.dart';
 
