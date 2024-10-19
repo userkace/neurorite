@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neurorite/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:neurorite/models/firestore.dart';
@@ -234,7 +235,10 @@ class NotePageState extends State<NotePage> {
                       controller: _contentController,
                       maxLines: null,
                       expands: true,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Outfit',
+                          color: Colors.white),
                       decoration: const InputDecoration(
                         hintText: 'Enter your note',
                         hintStyle: TextStyle(color: Colors.white54),
@@ -281,6 +285,9 @@ class NotePageState extends State<NotePage> {
                               color: Colors.white,
                               fontFamily: 'Outfit',
                               fontSize: 16),
+                          a: const TextStyle(
+                              color: AppTheme.primary,
+                              fontFamily: 'Outfit'),
                           listBullet: const TextStyle(
                               color: Colors.white, fontFamily: 'Outfit'),
                           code: const TextStyle(
@@ -297,6 +304,13 @@ class NotePageState extends State<NotePage> {
                             borderRadius:
                                 BorderRadius.circular(8), // Rounded corners
                           ),
+                          checkbox: TextStyle(
+                            color: AppTheme.primary,
+                            fontFamily: 'Outfit',
+                            decoration: TextDecoration.combine([
+                              TextDecoration.lineThrough,
+                            ]),
+                          ),
                           horizontalRuleDecoration: const BoxDecoration(
                             border: Border(
                               top: BorderSide(
@@ -310,7 +324,7 @@ class NotePageState extends State<NotePage> {
                         onTapLink: (text, href, title) async {
                           if (href != null) {
                             final Uri url = Uri.parse(href);
-                            if (!await launchUrl(url)) {
+                            if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
                               throw Exception('Could not launch $url');
                             }
                           }
@@ -319,6 +333,7 @@ class NotePageState extends State<NotePage> {
                     ),
             ),
           ),
+
           // floatingActionButton: FloatingActionButton(
           //   backgroundColor: Color(0xFF0f0f0f),
           //   foregroundColor: Colors.purple,
@@ -329,6 +344,7 @@ class NotePageState extends State<NotePage> {
           //   },
           //   child: Icon(_isEditing ? Icons.done : Icons.text_fields_rounded),
           // ),
+
         ),
       ),
     );
@@ -466,35 +482,35 @@ class NotePageState extends State<NotePage> {
     }
   }
 
-  void _deleteNote() async {
-    if (widget.note != null) {
-      try {
-        await firestoreService
-            .deleteNote(widget.note!.id); // Delete from Firestore
-        widget.onDelete?.call(widget.note!); // Notify parent widget
-        Navigator.pop(context); // Go back
-      } catch (e) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-            content: Text('Error deleting note: $e'),
-            contentTextStyle: const TextStyle(color: Colors.white),
-            backgroundColor: const Color(0xFF0f0f0f),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Ok'),
-              ),
-            ],
-          ),
-        );
-      }
-    } else {
-      Navigator.pop(context); // Just go back if it's a new note
-    }
-  }
+  // void _deleteNote() async {
+  //   if (widget.note != null) {
+  //     try {
+  //       await firestoreService
+  //           .deleteNote(widget.note!.id); // Delete from Firestore
+  //       widget.onDelete?.call(widget.note!); // Notify parent widget
+  //       Navigator.pop(context); // Go back
+  //     } catch (e) {
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) => AlertDialog(
+  //           title: const Text('Error'),
+  //           titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+  //           content: Text('Error deleting note: $e'),
+  //           contentTextStyle: const TextStyle(color: Colors.white),
+  //           backgroundColor: const Color(0xFF0f0f0f),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () => Navigator.of(context).pop(),
+  //               child: const Text('Ok'),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     }
+  //   } else {
+  //     Navigator.pop(context); // Just go back if it's a new note
+  //   }
+  // }
 
   void _onTextChanged() {
     if (_titleController.text != _initialTitle ||
