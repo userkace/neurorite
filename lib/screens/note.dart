@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neurorite/services/firestore.dart';
+import 'package:neurorite/models/unsaved.dart';
 
 final FirestoreService firestoreService = FirestoreService();
 
@@ -56,10 +57,19 @@ class NotePageState extends State<NotePage> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.note?.title ?? '');
-    _contentController =
-        TextEditingController(text: widget.note?.content ?? '');
+    _contentController = TextEditingController(text: widget.note?.content ?? '');
     _initialTitle = _titleController.text;
     _initialContent = _contentController.text;
+
+    // Add listeners to detect changes
+    if (widget.note!= null){
+      _titleController.addListener(
+          _onTextChanged
+      );
+      _contentController.addListener(
+          _onTextChanged
+      );
+    }
   }
 
   @override
@@ -130,8 +140,7 @@ class NotePageState extends State<NotePage> {
                   }
                 }),
             actions: [
-              if (widget.note != null)
-                IconButton(
+              if (widget.note != null) IconButton(
                   icon: Icon(widget.note?.isPinned ?? false
                       ? Icons.push_pin
                       : Icons.push_pin_outlined),
@@ -139,7 +148,6 @@ class NotePageState extends State<NotePage> {
                     setState(() {
                       widget.note!.isPinned = !widget.note!.isPinned;
                     });
-
                     await firestoreService.updateNote(
                       widget.note!.id,
                       _titleController.text,
@@ -148,7 +156,13 @@ class NotePageState extends State<NotePage> {
                     );
                   },
                 ),
-              PopupMenuButton<String>(
+              if (widget.note == null ) IconButton(
+                icon: const Icon(Icons.save),
+                onPressed: () {
+                  _saveNote();
+                },
+              ),
+              if (widget.note != null) PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'save') {
                     _saveNote();
@@ -219,8 +233,65 @@ class NotePageState extends State<NotePage> {
 
   void _saveNote() async {
     if (_titleController.text.isNotEmpty) {
+    try {
+      if (widget.note != null && widget.note!.id.isNotEmpty) {
+        await firestoreService.updateNote(
+          widget.note!.id,
+          _titleController.text,
+          _contentController.text,
+          widget.note?.isPinned ?? false,
+        );
+      } else {
+        await firestoreService.addNote(
+          _titleController.text,
+          _contentController.text,
+          widget.note?.isPinned ?? false,
+        );
+      }
+        Navigator.pop(context);
+        widget.onSave?.call();
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+            content: Text('Error saving note: $e'),
+            contentTextStyle: const TextStyle(color: Colors.white),
+            backgroundColor: const Color(0xFF0f0f0f),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } else if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+          content: const Text('Title or content cannot be empty'),
+          contentTextStyle: const TextStyle(color: Colors.white),
+          backgroundColor: const Color(0xFF0f0f0f),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _autoSaveNote() async{
+    if (_titleController.text.isNotEmpty) {
       try {
-        if (widget.note?.id != null) {
+        if (widget.note != null && widget.note!.id.isNotEmpty) {
           await firestoreService.updateNote(
             widget.note!.id,
             _titleController.text,
@@ -234,7 +305,6 @@ class NotePageState extends State<NotePage> {
             widget.note?.isPinned ?? false,
           );
         }
-        Navigator.pop(context);
         widget.onSave?.call();
       } catch (e) {
         showDialog(
@@ -242,7 +312,7 @@ class NotePageState extends State<NotePage> {
           builder: (context) => AlertDialog(
             title: const Text('Error'),
             titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-            content: Text('Error deleting note: $e'),
+            content: Text('Error saving note: $e'),
             contentTextStyle: const TextStyle(color: Colors.white),
             backgroundColor: const Color(0xFF0f0f0f),
             actions: [
@@ -254,6 +324,23 @@ class NotePageState extends State<NotePage> {
           ),
         );
       }
+    } else if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+          content: const Text('Title or content cannot be empty'),
+          contentTextStyle: const TextStyle(color: Colors.white),
+          backgroundColor: const Color(0xFF0f0f0f),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -286,29 +373,16 @@ class NotePageState extends State<NotePage> {
       Navigator.pop(context); // Just go back if it's a new note
     }
   }
-}
 
-class UnsavedChangesDialog extends StatelessWidget {
-  const UnsavedChangesDialog({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Unsaved Changes'),
-      titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-      content: const Text('Do you want to save this note?'),
-      contentTextStyle: const TextStyle(color: Colors.white),
-      backgroundColor: const Color(0xFF0f0f0f),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('No'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Yes'),
-        ),
-      ],
-    );
+  void _onTextChanged() {
+    if (_titleController.text != _initialTitle ||
+        _contentController.text != _initialContent) {
+      _autoSaveNote();
+      _initialTitle = _titleController.text;
+      _initialContent = _contentController.text;
+    }
   }
+
 }
+
+

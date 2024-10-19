@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-
   class FirestoreService {
     User? user = FirebaseAuth.instance.currentUser!;
 
