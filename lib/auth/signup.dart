@@ -71,22 +71,6 @@ class _SignupState extends State<Signup> {
         builder: (context) => const ErrorDialog(
             title: 'Error', content: 'Passwords are not the same.'),
       );
-      return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: const Text('Passwords are not the same.'),
-          contentTextStyle: const TextStyle(color: Colors.white),
-          backgroundColor: const Color(0xFF0f0f0f),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
     } else if (_passwordController.text.isEmpty) {
       Navigator.pop(context);
       return showDialog(
@@ -140,7 +124,6 @@ class _SignupState extends State<Signup> {
         );
       }
     }
-    return null;
   }
 
   @override

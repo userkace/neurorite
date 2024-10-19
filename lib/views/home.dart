@@ -7,7 +7,6 @@ import 'dart:convert';
 
 import 'package:neurorite/views/note.dart';
 import 'package:neurorite/views/options.dart';
-
 import 'package:neurorite/theme/theme.dart';
 
 class Home extends StatefulWidget {
@@ -40,6 +39,7 @@ class HomeState extends State<Home> {
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: false,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         elevation: 0.0,
         titleSpacing: 0.0,
         centerTitle: true,

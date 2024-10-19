@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:neurorite/theme/app_theme.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:neurorite/models/firestore.dart';
 import 'package:neurorite/utils/unsaved.dart';
@@ -87,12 +86,14 @@ class NotePageState extends State<NotePage> {
       child: Theme(
         // Wrap with Theme widget
         data: ThemeData(
+          // useMaterial3: false,
           popupMenuTheme: const PopupMenuThemeData(
             color: Colors.black, // Set popup menu background color
           ),
           scaffoldBackgroundColor: const Color(0xFF0f0f0f),
           // Set background color
           appBarTheme: const AppBarTheme(
+            scrolledUnderElevation: 0,
             backgroundColor: Color(0xFF0f0f0f), // Set app bar background color
             iconTheme: IconThemeData(color: Colors.white), // Set icon color
             titleTextStyle:
@@ -322,12 +323,7 @@ class NotePageState extends State<NotePage> {
                           ),
                         ),
                         onTapLink: (text, href, title) async {
-                          if (href != null) {
-                            final Uri url = Uri.parse(href);
-                            if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                              throw Exception('Could not launch $url');
-                            }
-                          }
+
                         },
                       ),
                     ),
