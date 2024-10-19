@@ -140,6 +140,15 @@ class NotePageState extends State<NotePage> {
                   }
                 }),
             actions: [
+              if (widget.note == null ) Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: IconButton(
+                  icon: const Icon(Icons.save),
+                  onPressed: () {
+                    _saveNote();
+                  },
+                ),
+              ),s
               if (widget.note != null) IconButton(
                   icon: Icon(widget.note?.isPinned ?? false
                       ? Icons.push_pin
@@ -156,12 +165,6 @@ class NotePageState extends State<NotePage> {
                     );
                   },
                 ),
-              if (widget.note == null ) IconButton(
-                icon: const Icon(Icons.save),
-                onPressed: () {
-                  _saveNote();
-                },
-              ),
               if (widget.note != null) PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'save') {
