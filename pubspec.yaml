@@ -63,8 +63,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/icon/ic.png
-    # profile choices
+    - assets/icon/icon.png
     - assets/profiles/
 
 

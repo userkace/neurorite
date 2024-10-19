@@ -50,10 +50,31 @@ class FirestoreService {
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
 
-  Future<void> updateUserProfile(String docID, int profile) {
-    return users.doc(docID).update({
-      'profile': profile,
-    });
+  Future<void> updateProfile(int newProfileValue) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Get the current user's email
+        String? userEmail = user.email;
+        // Query the "store" collection to find the document with the matching email
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: userEmail)
+            .get();
+        // Update the profile value if a document is found
+        if (querySnapshot.docs.isNotEmpty) {
+          DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+          await documentSnapshot.reference.update({'profile': newProfileValue});
+          print('Profile updated successfully!');
+        } else {
+          print('No document found for the current user.');
+        }
+      } else {
+        print('No user is currently signed in.');
+      }
+    } catch (e) {
+      print('Error updating profile: $e');
+    }
   }
 
   Future<void> deleteUser(String docID) {

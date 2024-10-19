@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class AppBackground extends StatelessWidget {
   final bool colored;
 
-  const AppBackground({this.colored = true});
+  const AppBackground({super.key, this.colored = true});
 
   @override
   Widget build(BuildContext context) {
