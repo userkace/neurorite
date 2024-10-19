@@ -91,7 +91,7 @@ class _OptionsState extends State<Options> {
 
                       // Email
                       Text(
-                        user!['email'], // Replace with user's email
+                        user['email'], // Replace with user's email
                         style: const TextStyle(
                             fontSize: 18,
                             color: Colors.white,
