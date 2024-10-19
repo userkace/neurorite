@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neurorite/services/firestore.dart';
 import 'package:neurorite/models/unsaved.dart';
+import 'package:neurorite/models/error.dart';
 
 final FirestoreService firestoreService = FirestoreService();
 
@@ -61,14 +62,9 @@ class NotePageState extends State<NotePage> {
     _initialTitle = _titleController.text;
     _initialContent = _contentController.text;
 
-    // Add listeners to detect changes
     if (widget.note!= null){
-      _titleController.addListener(
-          _onTextChanged
-      );
-      _contentController.addListener(
-          _onTextChanged
-      );
+      _titleController.addListener(_onTextChanged);
+      _contentController.addListener(_onTextChanged);
     }
   }
 
@@ -274,19 +270,7 @@ class NotePageState extends State<NotePage> {
     } else if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: const Text('Title or content cannot be empty'),
-          contentTextStyle: const TextStyle(color: Colors.white),
-          backgroundColor: const Color(0xFF0f0f0f),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+        builder: (context) => const ErrorDialog(title: 'Error', content: 'Title or content cannot be empty.'),
       );
     }
   }
@@ -330,19 +314,7 @@ class NotePageState extends State<NotePage> {
     } else if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: const Text('Title or content cannot be empty'),
-          contentTextStyle: const TextStyle(color: Colors.white),
-          backgroundColor: const Color(0xFF0f0f0f),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+        builder: (context) => const ErrorDialog(title: 'Error', content: 'Title or content cannot be empty.'),
       );
     }
   }
