@@ -148,7 +148,7 @@ class NotePageState extends State<NotePage> {
                     _saveNote();
                   },
                 ),
-              ),s
+              ),
               if (widget.note != null) IconButton(
                   icon: Icon(widget.note?.isPinned ?? false
                       ? Icons.push_pin
