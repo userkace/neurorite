@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
+import 'package:neurorite/models/error.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -71,6 +72,10 @@ class _SignupState extends State<Signup>{
       Navigator.pop(context);
       return showDialog(
         context: context,
+        builder: (context) => const ErrorDialog(title: 'Error', content: 'Passwords are not the same.'),
+      );
+      return showDialog(
+        context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
           titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
@@ -89,37 +94,13 @@ class _SignupState extends State<Signup>{
       Navigator.pop(context);
       return showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: const Text('Password cannot be empty.'),
-          contentTextStyle: const TextStyle(color: Colors.white),
-          backgroundColor: const Color(0xFF0f0f0f),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+        builder: (context) => const ErrorDialog(title: 'Error', content: 'Password cannot be empty'),
       );
   } else if (_passwordController.text.length < 6) {
       Navigator.pop(context);
       return showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: const Text('Password must be at least 6 characters long.'),
-          contentTextStyle: const TextStyle(color: Colors.white),
-          backgroundColor: const Color(0xFF0f0f0f),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+        builder: (context) => const ErrorDialog(title: 'Error', content: 'Password must be at least 6 characters long.'),
       );
     } else {
       try{
@@ -151,19 +132,7 @@ class _SignupState extends State<Signup>{
         Navigator.pop(context);
         return showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-            content: Text('Error creating user: $e'),
-            contentTextStyle: const TextStyle(color: Colors.white),
-            backgroundColor: const Color(0xFF0f0f0f),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
+          builder: (context) => ErrorDialog(title: 'Error', content: 'Error with sign up: $e'),
         );
       }
     }

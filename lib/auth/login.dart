@@ -4,6 +4,7 @@ import 'package:neurorite/auth/signup.dart';
 import 'package:neurorite/theme/theme.dart';
 import 'package:neurorite/auth/auth.dart';
 import 'package:neurorite/auth/forgot.dart';
+import 'package:neurorite/models/error.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -63,19 +64,7 @@ class _LoginState extends State<Login> {
       Navigator.pop(context);
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: Text('Error with log in: $e'),
-          contentTextStyle: const TextStyle(color: Colors.white),
-          backgroundColor: const Color(0xFF0f0f0f),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+        builder: (context) => ErrorDialog(title: 'Error', content: 'Error with log in: $e'),
       );
     }
   }

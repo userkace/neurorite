@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
+import 'package:neurorite/models/error.dart';
 
 class Forgot extends StatefulWidget {
   const Forgot({super.key});
@@ -12,6 +14,9 @@ class Forgot extends StatefulWidget {
 
 class _ForgotState extends State<Forgot> {
   final TextEditingController _emailController = TextEditingController();
+
+  bool _isButtonDisabled = false;
+  Timer? _timer;
 
   final FocusNode _eFocusNode = FocusNode();
   bool _isTextFieldFocused = false; // State variable for focus
@@ -25,6 +30,7 @@ class _ForgotState extends State<Forgot> {
   @override
   void dispose() {
     _eFocusNode.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -40,64 +46,27 @@ class _ForgotState extends State<Forgot> {
 
   Future<UserCredential?> forgot() async {
     if (_emailController.text.isEmpty) {
-      await Navigator.of(context).pop;
+      Navigator.of(context).pop;
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-          content: const Text('Email cannot be empty.'),
-          contentTextStyle: const TextStyle(color: Colors.white),
-          backgroundColor: const Color(0xFF0f0f0f),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+        builder: (context) => const ErrorDialog(title: 'Error', content: 'Email cannot be empty.'),
       );
     } else {
       try {
         await FirebaseAuth.instance
             .sendPasswordResetEmail(email: _emailController.text);
+        await showDialog(
+          context: context,
+          builder: (context) => ErrorDialog(title: 'Success', content: 'Password reset has been sent to your inbox. ${_emailController.text}'),
+        );
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const Login(),
         ));
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Success'),
-            titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-            content: Text(
-                'Password reset has been sent to your inbox. ${_emailController.text}'),
-            contentTextStyle: const TextStyle(color: Colors.white),
-            backgroundColor: const Color(0xFF0f0f0f),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
       } on FirebaseAuthException catch (e) {
         Navigator.of(context).pop;
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
-            content: Text('Error creating user: $e'),
-            contentTextStyle: const TextStyle(color: Colors.white),
-            backgroundColor: const Color(0xFF0f0f0f),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
+          builder: (context) => ErrorDialog(title: 'Error', content: 'Error with sign up: $e'),
         );
       }
     }
@@ -160,20 +129,48 @@ class _ForgotState extends State<Forgot> {
                       Theme(
                         data: AppTheme.enterButtonTheme,
                         child: ElevatedButton(
-                          onPressed: () async {
+                          onPressed: _isButtonDisabled
+                              ? null // Disable button if flag is true
+                              : () async {
+                            setState(() {
+                              _isButtonDisabled = true; // Disable button on click
+                            });
                             await forgot();
+                            // Re-enable button after a timeout
+                            _timer = Timer(const Duration(seconds: 5), () { // 5-second timeout
+                              setState(() {
+                                _isButtonDisabled = false;
+                              });
+                            });
                           },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(55),
-                            textStyle: const TextStyle(
-                              fontSize: 18,
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                                  (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.disabled)) {
+                                  return Colors.transparent; // or Colors.red, your preferred disabled color
+                                } else {
+                                  return AppTheme.tertiary; // your enabled color
+                                }
+                              },
                             ),
+                            foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                                  (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.disabled)) {
+                                  return Colors.transparent; // Your preferred disabled color
+                                } else {
+                                  return Colors.white; // Use default foreground color
+                                }
+                              },
+                            ),
+                            minimumSize: WidgetStateProperty.all(const Size.fromHeight(55)),
+                            textStyle: WidgetStateProperty.all(const TextStyle(fontSize: 18)),
                           ),
                           child: const Text(
                             "Confirm",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Outfit',
+                              fontFamily:
+                              'Outfit', //GoogleFonts.getFont('Outfit').fontFamily,
                             ),
                           ),
                         ),
