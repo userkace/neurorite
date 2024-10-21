@@ -18,9 +18,12 @@ class Auth extends StatelessWidget {
             if (user != null && user.emailVerified) {
               // User is signed in and verified
               return const Home();
-            } else {
+            } else if (!user!.emailVerified){
               // User is signed in but not verified
               return const Verify();
+            } else {
+              // User is not signed in
+              return const Login();
             }
           } else {
             // User is not signed in
