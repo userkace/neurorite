@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:neurorite/theme/theme.dart';
+import 'package:neurorite/utils/error.dart';
 import 'package:neurorite/views/profile.dart';
+import 'package:neurorite/models/firestore.dart';
 
 class Options extends StatefulWidget {
   const Options({super.key});
@@ -113,10 +115,10 @@ class _OptionsState extends State<Options> {
                               padding: EdgeInsets.zero,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
-                                    10.0), // Adjust the radius as needed
+                                    10.0),
                               ),
                               backgroundColor:
-                                  Colors.white38, // Customize button color
+                                  Colors.white38,
                             ),
                             child: const HugeIcon(
                               icon: HugeIcons.strokeRoundedAiUser,
@@ -134,10 +136,10 @@ class _OptionsState extends State<Options> {
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
-                                  10.0), // Adjust the radius as needed
+                                  10.0),
                             ),
                             backgroundColor:
-                                AppTheme.tertiary, // Customize button color
+                                AppTheme.tertiary,
                           ),
                           child: const Text(
                             'Logout',
@@ -150,15 +152,73 @@ class _OptionsState extends State<Options> {
                     const Spacer(),
                     Align(
                       alignment: Alignment.bottomCenter,
+                      child: TextButton(
+                        onPressed: () => _changeEmail(),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+
+                            Text(
+                              "Change Email?",
+                              style: TextStyle(
+                                  fontFamily: 'Outfit',
+                                  color: AppTheme.primary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: TextButton(
+                        onPressed: () => _changePassword(),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+
+                            Text(
+                              "Change Password?",
+                              style: TextStyle(
+                                  fontFamily: 'Outfit',
+                                  color: AppTheme.primary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 5.0),
                         child: TextButton(
                           onPressed: () {
-                            // Handle button press (e.g., navigate to login screen)
+                                showDialog(context: context,
+                                    builder: (context) => AlertDialog(
+                                  title: const Text('Account Deletion...'),
+                                  titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+                                  content: const Text('Are you certain? This action is permanent.'),
+                                  contentTextStyle: const TextStyle(color: Colors.white),
+                                  backgroundColor: const Color(0xFF0f0f0f),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('NO',),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async => {
+                                        deleteUser(),
+                                        Navigator.pop(context),
+                                      },
+                                      child: const Text('YES', style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                                );
                           },
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+
                               Text(
                                 "Delete Account?",
                                 style: TextStyle(
@@ -201,5 +261,103 @@ class _OptionsState extends State<Options> {
         );
       },
     );
+  }
+
+  void _changeEmail() async {
+    String newEmail = ''; // To store the new email entered by the user
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Change Email'),
+          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+          content: TextField(
+            onChanged: (value) {
+              newEmail = value;
+            },
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(hintText: 'Enter new email'),
+          ),
+          contentTextStyle: const TextStyle(color: Colors.white),
+          backgroundColor: const Color(0xFF0f0f0f),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Call the changeEmail function with the new email
+                await firestoreService.changeEmail(newEmail);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _changePassword() async {
+    String newPassword = ''; // To store the new password
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Change Password'),
+          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
+          content: TextField(
+            onChanged: (value) {
+              newPassword = value;
+            },
+            style: const TextStyle(color: Colors.white),
+            obscureText: true, // Hide password input
+            decoration: const InputDecoration(hintText: 'Enter new password'),
+          ),
+          contentTextStyle: const TextStyle(color: Colors.white),
+          backgroundColor: const Color(0xFF0f0f0f),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await firestoreService.changePassword(newPassword);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void deleteUser() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.delete();
+        await firestoreService.deleteProfile();
+        const ErrorDialog(title: 'Success', content: 'Account has been deleted.');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        ErrorDialog(title: 'Error', content: 'Failed to delete user: ${e.code}');
+      } else {
+        ErrorDialog(title: 'Error', content: 'Failed to delete user: ${e.code}');
+      }
+    };
+    Navigator.pop(context);
   }
 }

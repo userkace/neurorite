@@ -3,8 +3,6 @@ import 'package:neurorite/models/firestore.dart';
 import 'package:neurorite/views/options.dart';
 import 'package:neurorite/theme/app_theme.dart';
 
-final FirestoreService firestoreService = FirestoreService();
-
 class ProfileItem {
   final String assetLink;
   final int number;

@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:neurorite/views/note.dart';
 import 'package:neurorite/views/options.dart';
 import 'package:neurorite/theme/theme.dart';
+import 'package:neurorite/models/firestore.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

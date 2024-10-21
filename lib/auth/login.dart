@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/auth/signup.dart';
+import 'package:neurorite/auth/verify.dart';
 import 'package:neurorite/theme/theme.dart';
 import 'package:neurorite/auth/auth.dart';
 import 'package:neurorite/auth/forgot.dart';
@@ -51,21 +52,57 @@ class _LoginState extends State<Login> {
           child: CircularProgressIndicator(color: AppTheme.tertiary)),
     );
     try {
+      // Sign in the user
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text, password: _passwordController.text);
-      if (context.mounted) Navigator.pop(context);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const Auth(),
-      ));
+      // Get the current user
+      final user = FirebaseAuth.instance.currentUser;
+      // Check if the user's email is verified
+      if (user != null && !user.emailVerified) {
+        if (context.mounted) Navigator.pop(context);
+        // Redirect to verification screen
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => const Verify(),
+        ));
+      } else {
+        if (context.mounted) Navigator.pop(context);
+        // Allow sign-in and navigate to Auth screen
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const Auth(),
+        ));
+      }
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       showDialog(
         context: context,
         builder: (context) =>
-            ErrorDialog(title: 'Error', content: 'Error with log in: $e'),
+            ErrorDialog(title: 'Error', content: 'Error with log in: ${e.code}'),
       );
     }
   }
+
+  // void logIn() async {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => const Center(
+  //         child: CircularProgressIndicator(color: AppTheme.tertiary)),
+  //   );
+  //   try {
+  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //         email: _emailController.text, password: _passwordController.text);
+  //     if (context.mounted) Navigator.pop(context);
+  //     Navigator.of(context).pushReplacement(MaterialPageRoute(
+  //       builder: (context) => const Auth(),
+  //     ));
+  //   } on FirebaseAuthException catch (e) {
+  //     Navigator.pop(context);
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) =>
+  //           ErrorDialog(title: 'Error', content: 'Error with log in: ${e.code}'),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +175,8 @@ class _LoginState extends State<Login> {
                         TextButton(
                           child: const Text(
                             'Forgot password?',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.white,
+                            fontFamily: 'Outfit'),
                           ),
                           onPressed: () {
                             Navigator.of(context)

@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:neurorite/utils/error.dart';
+
+final FirestoreService firestoreService = FirestoreService();
 
 class FirestoreService {
   User? user = FirebaseAuth.instance.currentUser!;
@@ -77,7 +80,156 @@ class FirestoreService {
     }
   }
 
-  Future<void> deleteUser(String docID) {
-    return users.doc(docID).delete();
+  Future<void> deleteProfile() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        String? userEmail = user.email;
+
+        // 1. Delete notes with the user's email
+        QuerySnapshot notesSnapshot = await FirebaseFirestore.instance
+            .collection('notes')
+            .where('email', isEqualTo: userEmail)
+            .get();
+
+        for (var doc in notesSnapshot.docs) {
+          await doc.reference.delete();
+        }
+
+        // 2. Delete the user profile
+        QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: userEmail)
+            .get();
+
+        if (userSnapshot.docs.isNotEmpty) {
+          DocumentSnapshot documentSnapshot = userSnapshot.docs.first;
+          await documentSnapshot.reference.delete();
+          print('Profile and associated notes deleted successfully!');
+        } else {
+          print('No document found for the current user.');
+        }
+      } else {
+        print('No user is currently signed in.');
+      }
+    } catch (e) {
+      print('Error deleting profile and notes: $e');
+    }
+  }
+
+  Future<void> changeEmail(String newEmail) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.verifyBeforeUpdateEmail(newEmail);
+        String oldEmail = user.email!;
+
+        QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: oldEmail)
+            .get();
+
+        if (userSnapshot.docs.isNotEmpty) {
+          DocumentSnapshot documentSnapshot = userSnapshot.docs.first;
+          String documentId = documentSnapshot.id;
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(newEmail)
+              .set(documentSnapshot.data() as Map<String, dynamic>);
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(newEmail)
+              .update({'email': newEmail, 'profile': 0});
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(documentId)
+              .delete();
+
+          QuerySnapshot notesSnapshot = await FirebaseFirestore.instance
+              .collection('notes')
+              .where('email', isEqualTo: oldEmail)
+              .get();
+
+          for (var doc in notesSnapshot.docs) {
+            await doc.reference.update({'email': newEmail});
+          }
+
+          await FirebaseAuth.instance.signOut();
+        } else {
+          const ErrorDialog(title: 'Error', content: 'No user document found for the current user in Firestore.');
+        }
+      } else {
+        const ErrorDialog(title: 'Error', content: 'No user currently signed in.');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        ErrorDialog(title: 'Error', content: 'Error with changing email: ${e.code}');
+      } else {
+        ErrorDialog(title: 'Error', content: 'Error with changing email: ${e.code}');
+      }
+    }
+  }
+
+
+  // Future<void> changeEmail(String newEmail) async {
+  //   try {
+  //     User? user = FirebaseAuth.instance.currentUser;
+  //     if (user != null) {
+  //       await user.verifyBeforeUpdateEmail(newEmail);
+  //       String oldEmail = user.email!;
+  //
+  //       QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+  //           .collection('users')
+  //           .where('email', isEqualTo: oldEmail)
+  //           .get();
+  //
+  //       if (userSnapshot.docs.isNotEmpty) {
+  //         DocumentSnapshot documentSnapshot = userSnapshot.docs.first;
+  //         await documentSnapshot.reference.update({'email': newEmail});
+  //         await documentSnapshot.reference.update({'profile': 0});
+  //       } else {
+  //         const ErrorDialog(title: 'Error', content: 'No user document found for the current user in Firestore.');
+  //       }
+  //
+  //       QuerySnapshot notesSnapshot = await FirebaseFirestore.instance
+  //           .collection('notes')
+  //           .where('email', isEqualTo: oldEmail)
+  //           .get();
+  //
+  //       for (var doc in notesSnapshot.docs) {
+  //         await doc.reference.update({'email': newEmail});
+  //       }
+  //       await FirebaseAuth.instance.signOut();
+  //     } else {
+  //       const ErrorDialog(title: 'Error', content: 'No user currently signed in.');
+  //     }
+  //   } on FirebaseAuthException catch (e) {
+  //     if (e.code == 'requires-recent-login') {
+  //       ErrorDialog(title: 'Error', content: 'Error with changing email: ${e.code}');
+  //     } else {
+  //       ErrorDialog(title: 'Error', content: 'Error with changing email: ${e.code}');
+  //     }
+  //   }
+  // }
+
+  Future<void> changePassword(String newPassword) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.updatePassword(newPassword);
+        await FirebaseAuth.instance.signOut();
+      } else {
+        const ErrorDialog(title: 'Error', content: 'No user currently signed in.');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        ErrorDialog(title: 'Error', content: 'Error with changing password: ${e.code}');
+      } else {
+        ErrorDialog(title: 'Error', content: 'Error with changing password: ${e.code}');
+      }
+    }
   }
 }

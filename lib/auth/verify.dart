@@ -5,14 +5,14 @@ import 'package:neurorite/auth/login.dart';
 import 'package:neurorite/theme/theme.dart';
 import 'package:neurorite/utils/error.dart';
 
-class Forgot extends StatefulWidget {
-  const Forgot({super.key});
+class Verify extends StatefulWidget {
+  const Verify({super.key});
 
   @override
-  State<Forgot> createState() => _ForgotState();
+  State<Verify> createState() => _ForgotState();
 }
 
-class _ForgotState extends State<Forgot> {
+class _ForgotState extends State<Verify> {
   final TextEditingController _emailController = TextEditingController();
 
   bool _isButtonDisabled = false;
@@ -44,38 +44,6 @@ class _ForgotState extends State<Forgot> {
     });
   }
 
-  Future<UserCredential?> forgot() async {
-    if (_emailController.text.isEmpty) {
-      Navigator.of(context).pop;
-      showDialog(
-        context: context,
-        builder: (context) => const ErrorDialog(
-            title: 'Error', content: 'Email cannot be empty.'),
-      );
-    } else {
-      try {
-        await FirebaseAuth.instance
-            .sendPasswordResetEmail(email: _emailController.text);
-        await showDialog(
-          context: context,
-          builder: (context) => ErrorDialog(
-              title: 'Success',
-              content:
-                  'Password reset has been sent to your inbox. ${_emailController.text}'),
-        );
-        Navigator.of(context).pop;
-      } on FirebaseAuthException catch (e) {
-        Navigator.of(context).pop;
-        showDialog(
-          context: context,
-          builder: (context) =>
-              ErrorDialog(title: 'Error', content: 'Error with sign up: ${e.code}'),
-        );
-      }
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +66,7 @@ class _ForgotState extends State<Forgot> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       GradientText(
-                        "Forgot Password",
+                        "Verify Email",
                         style: const TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -113,42 +81,17 @@ class _ForgotState extends State<Forgot> {
                         ),
                       ),
                       const SizedBox(height: 16.0),
-                      Theme(
-                        data: AppTheme.textFieldTheme,
-                        child: Column(children: <Widget>[
-                          TextField(
-                            controller: _emailController,
-                            focusNode: _eFocusNode,
-                            decoration: const InputDecoration(
-                              labelText: "Email",
-                              labelStyle: TextStyle(
-                                fontFamily: 'Outfit',
-                              ),
-                            ),
-                          ),
-                        ]),
-                      ),
+                      const Text('Check your Email for a verification link.',
+                          style: TextStyle(color: Colors.white,
+                              fontSize: 16,
+                              fontFamily: 'Outfit')),
                       const SizedBox(height: 30.0),
                       Theme(
                         data: AppTheme.enterButtonTheme,
                         child: ElevatedButton(
-                          onPressed: _isButtonDisabled
-                              ? null // Disable button if flag is true
-                              : () async {
-                                  setState(() {
-                                    _isButtonDisabled =
-                                        true; // Disable button on click
-                                  });
-                                  await forgot();
-                                  // Re-enable button after a timeout
-                                  _timer =
-                                      Timer(const Duration(seconds: 5), () {
-                                    // 5-second timeout
-                                    setState(() {
-                                      _isButtonDisabled = false;
-                                    });
-                                  });
-                                },
+                          onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => const Login(),
+                          )),
                           style: ButtonStyle(
                             backgroundColor:
                                 WidgetStateProperty.resolveWith<Color>(
@@ -192,35 +135,6 @@ class _ForgotState extends State<Forgot> {
                     ],
                   ),
                 ),
-              ),
-            ),
-            // "Login" TextButton at the bottom that moves up with the keyboard
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    bottom: 5.0), // Slight padding from bottom
-                child: TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const Login(),
-                      ));
-                    },
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Remember your password? ",
-                          style: TextStyle(
-                              fontFamily: 'Outfit', color: AppTheme.secondary),
-                        ),
-                        Text(
-                          "Login",
-                          style: TextStyle(
-                              fontFamily: 'Outfit', color: Colors.white),
-                        ),
-                      ],
-                    )),
               ),
             ),
           ],

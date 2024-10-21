@@ -92,6 +92,10 @@ class _SignupState extends State<Signup> {
             .createUserWithEmailAndPassword(
                 email: _emailController.text,
                 password: _passwordController.text);
+        if (userCredential.user != null) {
+          await userCredential.user!.sendEmailVerification();
+          print('Verification email sent!');
+        }
         createUserDocument(userCredential);
 
         if (context.mounted) {
@@ -120,7 +124,7 @@ class _SignupState extends State<Signup> {
         return showDialog(
           context: context,
           builder: (context) =>
-              ErrorDialog(title: 'Error', content: 'Error with sign up: $e'),
+              ErrorDialog(title: 'Error', content: 'Error with sign up: ${e.code}'),
         );
       }
     }
