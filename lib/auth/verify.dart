@@ -15,35 +15,6 @@ class Verify extends StatefulWidget {
 class _ForgotState extends State<Verify> {
   final TextEditingController _emailController = TextEditingController();
 
-  bool _isButtonDisabled = false;
-  Timer? _timer;
-
-  final FocusNode _eFocusNode = FocusNode();
-  bool _isTextFieldFocused = false; // State variable for focus
-
-  @override
-  void initState() {
-    super.initState();
-    _eFocusNode.addListener(_onFocusChange);
-  }
-
-  @override
-  void dispose() {
-    _eFocusNode.dispose();
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _onFocusChange() {
-    setState(() {
-      if (_eFocusNode.hasFocus) {
-        _isTextFieldFocused = true;
-      } else {
-        _isTextFieldFocused = false;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +30,7 @@ class _ForgotState extends State<Verify> {
             const AppBackground(colored: true),
             Center(
               child: DialogBackground(
-                isTextFieldFocused: _isTextFieldFocused,
+                isTextFieldFocused: true,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
