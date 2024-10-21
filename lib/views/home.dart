@@ -64,10 +64,10 @@ class HomeState extends State<Home> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius:
-                  BorderRadius.circular(8.0), // Adjust radius as needed
+                  BorderRadius.circular(8.0),
               border: Border.all(
-                color: Colors.white70, // Outline color
-                width: 1.0, // Outline width
+                color: Colors.white70,
+                width: 1.0,
               ),
             ),
             child: TextField(
@@ -79,9 +79,9 @@ class HomeState extends State<Home> {
                   color: Colors.white38,
                   fontFamily: 'Outfit',
                 ),
-                border: InputBorder.none, // Remove underline border
+                border: InputBorder.none,
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16.0), // Add padding
+                    EdgeInsets.symmetric(horizontal: 16.0),
               ),
               onChanged: (text) {
                 _filterNotes(text);

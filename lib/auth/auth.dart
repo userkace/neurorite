@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/views/home.dart';
 import 'package:neurorite/auth/login.dart';
-import 'package:neurorite/auth/verify.dart'; // Import your verification screen
+import 'package:neurorite/auth/verify.dart';
 
 class Auth extends StatelessWidget {
   const Auth({super.key});
@@ -20,7 +20,7 @@ class Auth extends StatelessWidget {
               return const Home();
             } else {
               // User is signed in but not verified
-              return const Verify(); // Show verification screen
+              return const Verify();
             }
           } else {
             // User is not signed in
