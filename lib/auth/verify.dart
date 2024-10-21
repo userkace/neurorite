@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:neurorite/auth/login.dart';
@@ -30,7 +29,7 @@ class _ForgotState extends State<Verify> {
             const AppBackground(colored: true),
             Center(
               child: DialogBackground(
-                isTextFieldFocused: true,
+                isTextFieldFocused: false,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
@@ -53,14 +52,16 @@ class _ForgotState extends State<Verify> {
                       ),
                       const SizedBox(height: 16.0),
                       const Text('Check your Email for a verification link.',
-                          style: TextStyle(color: Colors.white,
+                          style: TextStyle(
+                              color: Colors.white,
                               fontSize: 16,
                               fontFamily: 'Outfit')),
                       const SizedBox(height: 30.0),
                       Theme(
                         data: AppTheme.enterButtonTheme,
                         child: ElevatedButton(
-                          onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          onPressed: () => Navigator.of(context)
+                              .pushReplacement(MaterialPageRoute(
                             builder: (context) => const Login(),
                           )),
                           style: ButtonStyle(
@@ -106,6 +107,44 @@ class _ForgotState extends State<Verify> {
                     ],
                   ),
                 ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    bottom: 5.0), // Slight padding from bottom
+                child: TextButton(
+                    onPressed: () async {
+                      try {
+                        // Get the current user
+                        User? user = FirebaseAuth.instance.currentUser;
+
+                        // Check if the user is not null
+                        if (user != null && !user.emailVerified) {
+                          // Resend verification email
+                          await user.sendEmailVerification();
+                          ErrorDialog(title: 'Success', content: 'Check your inbox at ${user.email}.');
+                        }
+                      } catch (e) {
+                        ErrorDialog(title: 'Error', content: 'Failed to resend verification email: $e');
+                      }
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "No verification email? ",
+                          style: TextStyle(
+                              fontFamily: 'Outfit', color: AppTheme.primary),
+                        ),
+                        Text(
+                          "Resend",
+                          style: TextStyle(
+                              fontFamily: 'Outfit', color: Colors.white),
+                        ),
+                      ],
+                    )),
               ),
             ),
           ],

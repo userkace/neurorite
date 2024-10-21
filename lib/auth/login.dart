@@ -60,7 +60,6 @@ class _LoginState extends State<Login> {
       // Check if the user's email is verified
       if (user != null && !user.emailVerified) {
         if (context.mounted) Navigator.pop(context);
-        // Redirect to verification screen
         Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => const Verify(),
         ));
@@ -80,29 +79,6 @@ class _LoginState extends State<Login> {
       );
     }
   }
-
-  // void logIn() async {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => const Center(
-  //         child: CircularProgressIndicator(color: AppTheme.tertiary)),
-  //   );
-  //   try {
-  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-  //         email: _emailController.text, password: _passwordController.text);
-  //     if (context.mounted) Navigator.pop(context);
-  //     Navigator.of(context).pushReplacement(MaterialPageRoute(
-  //       builder: (context) => const Auth(),
-  //     ));
-  //   } on FirebaseAuthException catch (e) {
-  //     Navigator.pop(context);
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) =>
-  //           ErrorDialog(title: 'Error', content: 'Error with log in: ${e.code}'),
-  //     );
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
